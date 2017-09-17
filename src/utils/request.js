@@ -1,17 +1,32 @@
 import fetch from 'dva/fetch';
+import web from './web';
 
 function parseJSON(response) {
-  return response.json();
+    return response.json();
 }
 
 function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  }
+    if(response.status >= 200 && response.status < 300) {
+        return response;
+    }
 
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
+    const error = new Error(response.statusText);
+    error.response = response;
+    throw error;
+}
+
+function formatOpt(data) {
+    let arr = [];
+    if(data) {
+    	for(let name in data) {
+	    	if(data[name]) {
+	    		arr.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]));
+	    	}
+	    };
+    }
+    // 添加一个随机数，防止缓存
+    arr.push('v=' + Math.floor(Math.random() * 10000 + 500));
+    return arr.join('&');
 }
 
 /**
@@ -22,9 +37,23 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-  return fetch(url, options)
-    .then(checkStatus)
-    .then(parseJSON)
-    .then(data => ({ data }))
-    .catch(err => ({ err }));
+    options = options || {};
+    options.method = options.method || 'post';
+    options.mode = options.mode || 'cors';
+    options.headers = options.headers || {};
+    options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/x-www-form-urlencoded';
+    let data = options.data;
+    let dataBody;
+    let token = web.getToken();
+    if(data) {
+        dataBody = formatOpt(data);
+        if(token) dataBody.token = token; // token注入
+    }
+    if(options.body && dataBody) dataBody = options.body + '&' + dataBody;
+    options.body = dataBody;
+    return fetch(url, options)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(data => data)
+        .catch(err => ({err}));
 }

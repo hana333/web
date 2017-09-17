@@ -1,0 +1,51 @@
+.container {
+	padding: 20px 30px 20px 30px;
+	margin-top: 120px;
+}
+
+.lineSpace {
+	margin-bottom: 12px;
+}
+
+.lineSpaceSmall {
+	margin-bottom: 5px;
+}
+
+.head {
+	margin-bottom: 15px;
+	font-size: 22px;
+	font-weight: 500;
+}
+
+.footer {
+	margin-top: 25px;
+	font-size: 8px;
+	text-align: center;
+}
+
+.pro {
+	color: #108EE9;
+}
+
+.forgetPassword {
+	float: right;
+}
+
+:global(.login-container .ant-checkbox-inner) {
+	top: -1px;
+	border-radius: 0px;
+}
+
+:global(.login-container .ant-checkbox-wrapper) {
+	font-size: 13px;
+}
+
+:global(.login-container .ant-input) {
+	font-size: 15px;
+	border-radius: 0px;
+}
+
+:global(.login-container .ant-btn-lg) {
+	width: 100%;
+	border-radius: 0px;
+}
