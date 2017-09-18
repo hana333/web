@@ -1,10 +1,13 @@
 import Toast from '../../../components/Toast';
 import key from '../../../utils/keymaster';
-import { Modal } from 'antd';
-import { browserHistory } from 'dva/router';
-import { emailRandom, checkEmailRandom } from '../services/randomService';
-import { validationExistEmail } from '../services/registerService.js';
-import { updatePasswordByEmailAndRand } from '../services/userService';
+import {Modal} from 'antd';
+import {hashHistory} from 'dva/router';
+import {emailRandom, checkEmailRandom} from '../services/randomService';
+import {validationExistEmail} from '../services/registerService';
+import {updatePasswordByEmailAndRand} from '../services/userService';
+
+import {modelTemplate} from '../../../utils/template';
+
 
 const currentPath = '/forgetPassword';
 
@@ -16,42 +19,28 @@ const defaultState = {
 	shouldNext: true
 };
 
-export default {
-
-	namespace: 'forgetPassword',
-
-	state: {...defaultState},
-
+export default modelTemplate({
+	currentPath: defaultState, 
+	defaultState: defaultState, 
+	namespace: 'forgetPassword', 
 	reducers: {
-		
 		emailChange(state, {payload}) {
 	  		return {...state, email: payload};
-	  	},
-	  	
+	    },
 	  	randomChange(state, {payload}) {
 	  		return {...state, random: payload};
 	  	},
-	  	
 	  	passwordChange(state, {payload}) {
 	  		return {...state, password: payload};
 	  	},
-
 		stepNextComplete(state) {
 			return {...state, ...{step: state.step + 1}};
 		},
-		
 		changeShouldNext(state) {
 			return {...state, ...{shouldNext: !state.shouldNext}};
-		},
-		
-		resetState() {
-			return {...defaultState};
 		}
-
-	},
-	
+	}, 
 	effects: {
-		
 		*stepNext(action, { select, put }) {
 			const forgetPasswordState = yield select(state => state.forgetPassword);
 			let shouldNext = forgetPasswordState.shouldNext;
@@ -66,6 +55,8 @@ export default {
 			let res;
 			switch (forgetPasswordState.step) {
 				case 1:
+				yield put({type: 'stepNextComplete'});
+				return;
 					if(!email) {
 						Toast.show('邮箱不能为空');
 						break;
@@ -113,7 +104,7 @@ export default {
 							content: '立即前往登录吧！',
 							okText: '立即前往',
 							onOk: function() {
-								browserHistory.push('/login');
+								hashHistory.push('/login');
 							},
 							maskClosable: false
 						});
@@ -125,19 +116,8 @@ export default {
 			}
 			yield put({type: 'changeShouldNext'});
 		}
-		
-	},
-	
+	}, 
 	subscriptions: {
-		
-		reset({dispatch, history}) {
-			history.listen(({ pathname }) => {
-		        if (pathname !== currentPath) {
-		        	dispatch({type: 'resetState'});
-		        }
-			});
-		},
-		
 		enter({dispatch, history}) {
 			return key.routerBind({
 				history: history, 
@@ -148,7 +128,5 @@ export default {
 				}
 			});
 		}
-		
 	}
-
-}
+});

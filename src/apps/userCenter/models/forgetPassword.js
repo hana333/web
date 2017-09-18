@@ -1,28 +1,27 @@
 import Toast from '../../../components/Toast';
 import key from '../../../utils/keymaster';
-import { Modal } from 'antd';
-import { browserHistory } from 'dva/router';
-import { validationRepeatEmail, registerByEmailAndRandom } from '../services/registerService';
-import { emailRandom, checkEmailRandom } from '../services/randomService';
+import {Modal} from 'antd';
+import {hashHistory} from 'dva/router';
+import {emailRandom, checkEmailRandom} from '../services/randomService';
+import {validationExistEmail} from '../services/registerService.js';
+import {updatePasswordByEmailAndRand} from '../services/userService';
 
-const currentPath = '/register';
+const currentPath = '/forgetPassword';
 
 const defaultState = {
 	step: 1,
 	email: '',
 	random: '',
-	username: '',
 	password: '',
-	passwordComfirm: '',
 	shouldNext: true
 };
 
 export default {
 
-	namespace: 'register',
-	
+	namespace: 'forgetPassword',
+
 	state: {...defaultState},
-	
+
 	reducers: {
 		
 		emailChange(state, {payload}) {
@@ -33,18 +32,10 @@ export default {
 	  		return {...state, random: payload};
 	  	},
 	  	
-	  	usernameChange(state, {payload}) {
-	  		return {...state, username: payload};
-	  	},
-	  	
 	  	passwordChange(state, {payload}) {
 	  		return {...state, password: payload};
 	  	},
-	  	
-	  	passwordComfirmChange(state, {payload}) {
-	  		return {...state, passwordComfirm: payload};
-	  	},
-		
+
 		stepNextComplete(state) {
 			return {...state, ...{step: state.step + 1}};
 		},
@@ -62,21 +53,18 @@ export default {
 	effects: {
 		
 		*stepNext(action, { select, put }) {
-			browserHistory.push('/login');
-			const registerState = yield select(state => state.register);
-			let shouldNext = registerState.shouldNext;
+			const forgetPasswordState = yield select(state => state.forgetPassword);
+			let shouldNext = forgetPasswordState.shouldNext;
 			if(!shouldNext) {
 				return;
 			} else {
 				yield put({type: 'changeShouldNext'});
 			}
-			let email = registerState.email;
-			let random = registerState.random;
-			let username = registerState.username;
-			let password = registerState.password;
-			let passwordComfirm = registerState.passwordComfirm;
+			let email = forgetPasswordState.email;
+			let random = forgetPasswordState.random;
+			let password = forgetPasswordState.password;
 			let res;
-			switch (registerState.step){
+			switch (forgetPasswordState.step) {
 				case 1:
 					if(!email) {
 						Toast.show('邮箱不能为空');
@@ -87,8 +75,8 @@ export default {
 						Toast.show('邮箱格式错误');
 						break;
 					}
-					res = yield validationRepeatEmail(email);
-					if(res.res !== 1) {
+					res = yield validationExistEmail(email);
+					if(res.res !== 1 || !res.data) {
 						Toast.show(res.msg);
 						break;
 					}
@@ -114,26 +102,18 @@ export default {
 						break;
 					}
 				case 3:
-					if(!username) {
-						Toast.show('用户名不能为空');
-						break;
-					}
 					if(!password) {
-						Toast.show('密码不能为空');
+						Toast.show('新密码不能为空');
 						break;
 					}
-					if(password !== passwordComfirm) {
-						Toast.show('两次输入密码不一致');
-						break;
-					}
-					res = yield registerByEmailAndRandom(email, random, username, password);
+					res = yield updatePasswordByEmailAndRand(random, email, password);
 					if(res.res === 1) {
 						Modal.success({
-							title: '注册成功',
+							title: '重置成功',
 							content: '立即前往登录吧！',
 							okText: '立即前往',
 							onOk: function() {
-								browserHistory.push('/login');
+								hashHistory.push('/login');
 							},
 							maskClosable: false
 						});

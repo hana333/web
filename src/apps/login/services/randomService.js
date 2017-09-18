@@ -1,5 +1,5 @@
 import request from '../../../utils/request';
-import { userCenter } from '../../../constants/UrlConstant';
+import {userCenter} from '../../../config/config';
 
 /**
  * 邮箱随机码

@@ -6,9 +6,7 @@ const app = dva({
 //	history: browserHistory
 });
 
-app.model(require('./models/login'));
-app.model(require('./models/register'));
-app.model(require('./models/forgetPassword'));
+app.model(require('./models/userCenter'));
 
 app.router(require('./router'));
 

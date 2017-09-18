@@ -1,5 +1,5 @@
 import request from '../../../utils/request';
-import { userCenter } from '../../../constants/UrlConstant';
+import {userCenter} from '../../../config/config';
 
 /**
  * 通过邮箱和验证码更新密码

@@ -1,9 +1,9 @@
 import Toast from '../../../components/Toast';
 import key from '../../../utils/keymaster';
-import { Modal } from 'antd';
-import { browserHistory } from 'dva/router';
-import { validationRepeatEmail, registerByEmailAndRandom } from '../services/registerService';
-import { emailRandom, checkEmailRandom } from '../services/randomService';
+import {Modal} from 'antd';
+import {hashHistory} from 'dva/router';
+import {validationRepeatEmail, registerByEmailAndRandom} from '../services/registerService';
+import {emailRandom, checkEmailRandom} from '../services/randomService';
 
 const currentPath = '/register';
 
@@ -62,7 +62,6 @@ export default {
 	effects: {
 		
 		*stepNext(action, { select, put }) {
-			browserHistory.push('/login');
 			const registerState = yield select(state => state.register);
 			let shouldNext = registerState.shouldNext;
 			if(!shouldNext) {
@@ -133,7 +132,7 @@ export default {
 							content: '立即前往登录吧！',
 							okText: '立即前往',
 							onOk: function() {
-								browserHistory.push('/login');
+								hashHistory.push('/login');
 							},
 							maskClosable: false
 						});
