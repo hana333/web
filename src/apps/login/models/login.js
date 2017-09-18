@@ -1,6 +1,5 @@
 import Toast from '../../../components/Toast';
 import key from '../../../utils/keymaster';
-import { browserHistory } from 'dva/router';
 import { trim } from '../../../utils/utils';
 import { setToken } from '../../../utils/web';
 import { loginMix } from '../services/loginService';

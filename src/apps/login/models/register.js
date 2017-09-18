@@ -1,9 +1,9 @@
 import Toast from '../../../components/Toast';
 import key from '../../../utils/keymaster';
-import { Modal } from 'antd';
-import { browserHistory } from 'dva/router';
-import { validationRepeatEmail, registerByEmailAndRandom } from '../services/registerService';
-import { emailRandom, checkEmailRandom } from '../services/randomService';
+import {Modal} from 'antd';
+import {routerRedux} from 'dva/router';
+import {validationRepeatEmail, registerByEmailAndRandom} from '../services/registerService';
+import {emailRandom, checkEmailRandom} from '../services/randomService';
 
 const currentPath = '/register';
 
@@ -62,7 +62,6 @@ export default {
 	effects: {
 		
 		*stepNext(action, { select, put }) {
-			browserHistory.push('/login');
 			const registerState = yield select(state => state.register);
 			let shouldNext = registerState.shouldNext;
 			if(!shouldNext) {
@@ -128,15 +127,18 @@ export default {
 					}
 					res = yield registerByEmailAndRandom(email, random, username, password);
 					if(res.res === 1) {
-						Modal.success({
-							title: '注册成功',
-							content: '立即前往登录吧！',
-							okText: '立即前往',
-							onOk: function() {
-								browserHistory.push('/login');
-							},
-							maskClosable: false
+						yield new Promise((resolve) => {
+							Modal.success({
+								title: '注册成功',
+								content: '立即前往登录吧！',
+								okText: '立即前往',
+								onOk: function() {
+									resolve();
+								},
+								maskClosable: false
+							});
 						});
+						yield put(routerRedux.push('/login'));
 						return;
 					} else {
 						Toast.show(res.msg);

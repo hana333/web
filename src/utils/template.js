@@ -39,10 +39,16 @@ function modelTemplate({currentPath, defaultState, namespace, reducers, effects,
 	
 	for(let key in effects) {
 		let tempFn = effects[key];
-		temp.effects[key] = function*(action, effects) {
-			console.log(tempFn);
-			yield* tempFn(action, effects);
+		function* fnTemp(action, effects) {
+			yield console.log(typeof tempFn);
+			for(let v of tempFn(action, effects)) {
+				yield v;
+			}
+//			yield* tempFn(action, effects);
+//			return;
 		};
+		
+		temp.effects[key] = fnTemp;
 	}
 	for(let key in subscriptions) {
 		temp.subscriptions[key] = subscriptions[key];
