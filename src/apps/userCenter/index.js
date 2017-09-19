@@ -1,11 +1,11 @@
 import dva from 'dva';
-import { browserHistory } from 'dva/router';
 import './index.css';
 
-const app = dva({
-//	history: browserHistory
-});
+const app = dva();
 
+app.model(require('../login/models/login'));
+app.model(require('../login/models/register'));
+app.model(require('../login/models/forgetPassword'));
 app.model(require('./models/userCenter'));
 
 app.router(require('./router'));

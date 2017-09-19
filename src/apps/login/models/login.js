@@ -1,8 +1,8 @@
 import Toast from '../../../components/Toast';
 import key from '../../../utils/keymaster';
-import { trim } from '../../../utils/utils';
-import { setToken } from '../../../utils/web';
-import { loginMix } from '../services/loginService';
+import {trim} from '../../../utils/utils';
+import {setLoginSession} from '../../../utils/web';
+import {loginMix} from '../services/loginService';
 
 const currentPath = '/login';
 
@@ -53,19 +53,17 @@ export default {
 			} else {
 				yield put({type: 'changeShouldLogin'});
 			}
-			let account = loginState.account;
-			let password = loginState.password;
-			let keepLogin = loginState.keepLogin;
+			let {account, password, keepLogin} = loginState;
 			let expire = keepLogin ? -1 : 1800;
 			if(!account || !(trim(account))) {
-	  			Toast.show('账号不能为空');
+	  			yield Toast.show('账号不能为空');
 	  		} else if(!password || !(trim(password))) {
-				Toast.show('密码不能为空');
+				yield Toast.show('密码不能为空');
 	  		} else {
 	  			let res = yield loginMix(account, password, expire);
 				if(res.res === 1) {
-					setToken(res.data.token, res.data.loginCycle);// 置入token
-					alert('登录成功');
+					yield setLoginSession(res.data, res.data.loginCycle * 1000);// 置入loginSession
+					yield alert('登录成功');
 					return;
 				}
 	  		}
@@ -78,7 +76,7 @@ export default {
 		
 		reset({dispatch, history}) {
 			history.listen(({ pathname }) => {
-		        if (pathname !== currentPath) {
+		        if (pathname === currentPath) {
 		        	dispatch({type: 'resetState'});
 		        }
 			});

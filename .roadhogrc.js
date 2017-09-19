@@ -7,7 +7,7 @@ const svgSpriteDirs = [
 
 export default {
 	svgSpriteLoaderDirs: svgSpriteDirs,
-	entry: 'src/apps/login/index.js',
+	entry: 'src/apps/userCenter/index.js',
 	outputPath: './dist',
 	publicPath: './',
 	//disableCSSModules: true, // 屏蔽CSSModules,避免css后缀混淆

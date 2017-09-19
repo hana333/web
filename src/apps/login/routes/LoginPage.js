@@ -64,7 +64,8 @@ function LoginPage({state, dispatch}) {
 					<Button 
 					className={style.loginButton} 
 					type='primary' 
-					size='large'
+					size='large' 
+					loading={!state.shouldLogin}
 					onClick={() => {
 						dispatch({
 							type: 'login/login'
@@ -80,7 +81,10 @@ function LoginPage({state, dispatch}) {
 					</Link>
 				</Row>
 				<Row className={style.footer}>
-					浙ICP备17032658号&nbsp;版权所属&nbsp;
+					浙ICP备17032658号
+					{' '}
+					版权所属
+					{' '}
 					<a href='javascript:void(0);'>减一科技</a>
 				</Row>
 			</Col>

@@ -1,0 +1,52 @@
+.container {
+	height: 100%;
+}
+
+.head {
+	font-size: 24px;
+	color: #FFFFFF;
+}
+
+.middle {
+	padding: 0 50px 0 50px;
+}
+
+.footer {
+	text-align: center;
+}
+
+.breadcrumb {
+	margin: 15px 0;
+}
+
+.sider {
+	height: 100%;
+	width: 200px;
+	background: #FFFFFF;
+}
+
+.contentContainer {
+	height: 100%;
+	padding: 24px 0;
+	background-color: #FFFFFF;
+}
+
+.content {
+	padding: 0 24px;
+}
+
+.headPromp {
+	font-size: 16px;
+	float: right;
+}
+
+.exitButton {
+	position: relative;
+	top: -1px;
+	border-radius: 0;
+}
+
+:global(.ant-spin-container),
+:global(.ant-spin-nested-loading) {
+	height: 100%;
+}

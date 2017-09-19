@@ -1,5 +1,5 @@
 import dva from 'dva';
-import { browserHistory } from 'dva/router';
+//import {browserHistory} from 'dva/router';
 import './index.css';
 
 const app = dva({

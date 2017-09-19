@@ -64,6 +64,7 @@ export default {
 		*stepNext(action, { select, put }) {
 			const registerState = yield select(state => state.register);
 			let shouldNext = registerState.shouldNext;
+			let doShouldNext = false;
 			if(!shouldNext) {
 				return;
 			} else {
@@ -78,51 +79,51 @@ export default {
 			switch (registerState.step){
 				case 1:
 					if(!email) {
-						Toast.show('邮箱不能为空');
+						yield Toast.show('邮箱不能为空');
 						break;
 					}
 					let emailReg = /^([a-z0-9A-Z]+[-|_|\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\.)+[a-zA-Z]{2,}$/;
 					if(!emailReg.test(email)) {
-						Toast.show('邮箱格式错误');
+						yield Toast.show('邮箱格式错误');
 						break;
 					}
 					res = yield validationRepeatEmail(email);
 					if(res.res !== 1) {
-						Toast.show(res.msg);
+						yield Toast.show(res.msg);
 						break;
 					}
 					res = yield emailRandom(email);
 					if(res.res === 1) {
-						yield put({type: 'stepNextComplete'});
+						yield doShouldNext = true;
 						break;
 					} else {
-						Toast.show(res.msg);
+						yield Toast.show(res.msg);
 						break;
 					}
 				case 2:
 					if(!random) {
-						Toast.show('验证码不能为空');
+						yield Toast.show('验证码不能为空');
 						break;
 					}
 					res = yield checkEmailRandom(random, email);
 					if(res.res === 1) {
-						yield put({type: 'stepNextComplete'});
+						yield doShouldNext = true;
 						break;
 					} else {
-						Toast.show(res.msg);
+						yield Toast.show(res.msg);
 						break;
 					}
 				case 3:
 					if(!username) {
-						Toast.show('用户名不能为空');
+						yield Toast.show('用户名不能为空');
 						break;
 					}
 					if(!password) {
-						Toast.show('密码不能为空');
+						yield Toast.show('密码不能为空');
 						break;
 					}
 					if(password !== passwordComfirm) {
-						Toast.show('两次输入密码不一致');
+						yield Toast.show('两次输入密码不一致');
 						break;
 					}
 					res = yield registerByEmailAndRandom(email, random, username, password);
@@ -141,11 +142,12 @@ export default {
 						yield put(routerRedux.push('/login'));
 						return;
 					} else {
-						Toast.show(res.msg);
+						yield Toast.show(res.msg);
 						break;
 					}
 			}
 			yield put({type: 'changeShouldNext'});
+			if(doShouldNext) yield put({type: 'stepNextComplete'});
 		}
 		
 	},
@@ -154,7 +156,7 @@ export default {
 		
 		reset({dispatch, history}) {
 			history.listen(({ pathname }) => {
-		        if (pathname !== currentPath) {
+		        if (pathname === currentPath) {
 		        	dispatch({type: 'resetState'});
 		        }
 			});

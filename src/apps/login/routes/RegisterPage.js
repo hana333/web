@@ -41,7 +41,10 @@ const Step1 = React.createClass({
 					autoFocus />
 				</Row>
 				<Row>
-					<Button size='large' onClick={() => {
+					<Button 
+					size='large' 
+					loading={!state.shouldNext} 
+					onClick={() => {
 						dispatch({
 							type: 'register/stepNext'
 						});
@@ -86,7 +89,10 @@ const Step2 = React.createClass({
 					autoFocus />
 				</Row>
 				<Row>
-					<Button size='large' onClick={() => {
+					<Button 
+					size='large' 
+					loading={!state.shouldNext} 
+					onClick={() => {
 						dispatch({
 							type: 'register/stepNext'
 						});
@@ -155,7 +161,11 @@ const Step3 = React.createClass({
 					placeholder='请确认你的密码' />
 				</Row>
 				<Row>
-					<Button type='primary'  size='large' onClick={() => {
+					<Button 
+					type='primary' 
+					size='large' 
+					loading={!state.shouldNext} 
+					onClick={() => {
 						dispatch({
 							type: 'register/stepNext'
 						});

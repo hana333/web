@@ -41,14 +41,10 @@ export default {
 		},
 		
 		changeShouldNext(state) {
-			console.log('----------')
-			console.log(state)
-			console.log('----------')
 			return {...state, ...{shouldNext: !state.shouldNext}};
 		},
 		
 		resetState() {
-			console.log(defaultState)
 			return {...defaultState};
 		}
 
@@ -80,37 +76,20 @@ export default {
 						Toast.show('邮箱格式错误');
 						break;
 					}
-					
-					yield new Promise((resolve) => {
-						setTimeout(() => {
-							resolve();
-						}, 2000);
-					});
-					yield doShouldNext = true;
-					break;
-					
-//					res = yield validationExistEmail(email);
-//					if(res.res !== 1 || !res.data) {
-//						Toast.show(res.msg);
-//						break;
-//					}
-//					res = yield emailRandom(email);
-//					if(res.res === 1) {
-//						yield doShouldNext = true;
-//						break;
-//					} else {
-//						yield Toast.show(res.msg);
-//						break;
-//					}
+					res = yield validationExistEmail(email);
+					if(res.res !== 1 || !res.data) {
+						Toast.show(res.msg);
+						break;
+					}
+					res = yield emailRandom(email);
+					if(res.res === 1) {
+						yield doShouldNext = true;
+						break;
+					} else {
+						yield Toast.show(res.msg);
+						break;
+					}
 				case 2:
-					yield new Promise((resolve) => {
-						setTimeout(() => {
-							resolve();
-						}, 2000);
-					});
-					yield doShouldNext = true;
-					break;
-					
 					if(!random) {
 						yield Toast.show('验证码不能为空');
 						break;
@@ -124,14 +103,6 @@ export default {
 						break;
 					}
 				case 3:
-				yield new Promise((resolve) => {
-						setTimeout(() => {
-							resolve();
-						}, 2000);
-					});
-					yield put(routerRedux.push('/login'));
-					break;
-				
 					if(!password) {
 						yield Toast.show('新密码不能为空');
 						break;
@@ -166,8 +137,7 @@ export default {
 		
 		reset({dispatch, history}) {
 			history.listen(({ pathname }) => {
-				console.log(pathname)
-		        if (pathname !== currentPath) {
+		        if (pathname === currentPath) {
 		        	dispatch({type: 'resetState'});
 		        }
 			});

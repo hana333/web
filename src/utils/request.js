@@ -1,5 +1,5 @@
 import fetch from 'dva/fetch';
-import web from './web';
+import {getLoginSession} from './web';
 
 function parseJSON(response) {
     return response.json();
@@ -44,10 +44,10 @@ export default function request(url, options) {
     options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/x-www-form-urlencoded';
     let data = options.data;
     let dataBody;
-    let token = web.getToken();
+    let loginSession = getLoginSession();
     if(data) {
+    	if(loginSession && loginSession.token) data.token = loginSession.token; // token注入
         dataBody = formatOpt(data);
-        if(token) dataBody.token = token; // token注入
     }
     if(options.body && dataBody) dataBody = options.body + '&' + dataBody;
     options.body = dataBody;

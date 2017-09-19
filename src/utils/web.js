@@ -1,16 +1,23 @@
 import store from './store';
 
-const TOKEN = 'token';
+const LOGIN_SESSION = 'LOGIN_SESSION';
 
-function setToken(token, expire) {
-	return store.get(TOKEN, token, expire);
+function setLoginSession(loginSession) {
+    if(loginSession) {
+        store.set(LOGIN_SESSION, loginSession, loginSession.loginCycle * 1000);
+    }
 }
 
-function getToken() {
-	return store.get(TOKEN);
+function getLoginSession() {
+    return store.get(LOGIN_SESSION);
+}
+
+function removeLoginSession() {
+    store.remove(LOGIN_SESSION);
 }
 
 export default {
-	setToken: setToken,
-	getToken: getToken
+    setLoginSession: setLoginSession,
+    getLoginSession: getLoginSession,
+    removeLoginSession: removeLoginSession
 };
