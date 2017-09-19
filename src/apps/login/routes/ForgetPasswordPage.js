@@ -1,6 +1,6 @@
 import React from 'react';
-import { Row, Col, Icon, Input, Button, Progress } from 'antd';
-import { connect } from 'dva';
+import {Row, Col, Icon, Input, Button, Progress} from 'antd';
+import {connect} from 'dva';
 import style from './css/ForgetPasswordPage.css';
 
 const Step1 = React.createClass({
@@ -34,7 +34,7 @@ const Step1 = React.createClass({
 					autoFocus />
 				</Row>
 				<Row>
-					<Button size='large' onClick={() => {
+					<Button size='large' loading={!state.shouldNext} onClick={() => {
 						dispatch({
 							type: 'forgetPassword/stepNext'
 						});
@@ -79,7 +79,7 @@ const Step2 = React.createClass({
 					autoFocus />
 				</Row>
 				<Row>
-					<Button size='large' onClick={() => {
+					<Button size='large' loading={!state.shouldNext} onClick={() => {
 						dispatch({
 							type: 'forgetPassword/stepNext'
 						});
@@ -124,7 +124,7 @@ const Step3 = React.createClass({
 					autoFocus />
 				</Row>
 				<Row>
-					<Button type='primary'  size='large' onClick={() => {
+					<Button type='primary' size='large' loading={!state.shouldNext} onClick={() => {
 						dispatch({
 							type: 'forgetPassword/stepNext'
 						});
