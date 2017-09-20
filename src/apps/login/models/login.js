@@ -1,6 +1,7 @@
 import Toast from '../../../components/Toast';
 import key from '../../../utils/keymaster';
 import {trim} from '../../../utils/utils';
+import {routerRedux} from 'dva/router';
 import {setLoginSession} from '../../../utils/web';
 import {loginMix} from '../services/loginService';
 
@@ -37,8 +38,8 @@ export default {
 			return {...state, ...{shouldLogin: !state.shouldLogin}};
 		},
 		
-		resetState() {
-			return {...defaultState};
+		resetState(state) {
+			return {...state, ...defaultState};
 		}
   	
 	},
@@ -48,6 +49,7 @@ export default {
 		*login({payload}, {select, put}) {
 			const loginState = yield select(state => state.login);
 			let shouldLogin = loginState.shouldLogin;
+			let loginRedirect = loginState.loginRedirect; 
 			if(!shouldLogin) {
 				return;
 			} else {
@@ -63,7 +65,7 @@ export default {
 	  			let res = yield loginMix(account, password, expire);
 				if(res.res === 1) {
 					yield setLoginSession(res.data, res.data.loginCycle * 1000);// 置入loginSession
-					yield alert('登录成功');
+					if(loginRedirect) yield put(routerRedux.push(loginRedirect));
 					return;
 				}
 	  		}
@@ -74,7 +76,7 @@ export default {
 	
 	subscriptions: {
 		
-		reset({dispatch, history}) {
+		reset({dispatch, history}, done) {
 			history.listen(({ pathname }) => {
 		        if (pathname === currentPath) {
 		        	dispatch({type: 'resetState'});

@@ -5,6 +5,13 @@ import style from './css/UserCenterPage.css';
 
 const {Header, Content, Sider, Footer} = Layout;
 
+const User = React.createClass({
+	render() {
+		return (
+			<div></div>
+		);
+	}
+});
 
 function UserCenterPage({state, dispatch}) {
 	return(

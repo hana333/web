@@ -44,8 +44,8 @@ export default {
 			return {...state, ...{shouldNext: !state.shouldNext}};
 		},
 		
-		resetState() {
-			return {...defaultState};
+		resetState(state) {
+			return {...state, ...defaultState};
 		}
 
 	},
