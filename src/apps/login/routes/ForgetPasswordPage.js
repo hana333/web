@@ -34,7 +34,7 @@ const Step1 = React.createClass({
 					autoFocus />
 				</Row>
 				<Row>
-					<Button size='large' loading={!state.shouldNext} onClick={() => {
+					<Button size='large' loading={state.loading} onClick={() => {
 						dispatch({
 							type: 'forgetPassword/stepNext'
 						});
@@ -138,7 +138,7 @@ const Step3 = React.createClass({
 	
 });
 
-function ForgetPasswordPage({state, dispatch}) {
+function ForgetPasswordPage({state, loading, dispatch}) {
 	let percent = state.step / 3 * 100;
 	let stepRectNode;
 	switch (state.step){
@@ -171,5 +171,8 @@ function ForgetPasswordPage({state, dispatch}) {
 }
 
 export default connect((state) => ({
-	state: state.forgetPassword
+	state: {
+		...state.forgetPassword,
+		loading: state.loading.global
+	},
 }))(ForgetPasswordPage);

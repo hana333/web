@@ -1,6 +1,6 @@
-import { Row, Col, Icon, Input, Button, Checkbox } from 'antd';
-import { connect, getState } from 'dva';
-import { Link } from 'dva/router';
+import {Row, Col, Icon, Input, Button, Checkbox} from 'antd';
+import {connect, getState} from 'dva';
+import {Link} from 'dva/router';
 import style from './css/LoginPage.css';
 
 function LoginPage({state, dispatch}) {
@@ -65,7 +65,7 @@ function LoginPage({state, dispatch}) {
 					className={style.loginButton} 
 					type='primary' 
 					size='large' 
-					loading={!state.shouldLogin}
+					loading={state.loading}
 					onClick={() => {
 						dispatch({
 							type: 'login/login'
@@ -93,5 +93,6 @@ function LoginPage({state, dispatch}) {
 }
 
 export default connect((state) => ({
-	state: state.login
+	state: state.login,
+	loading: state.loading.models.login
 }))(LoginPage);

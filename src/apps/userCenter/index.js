@@ -1,8 +1,11 @@
 import dva from 'dva';
-//import createLoading from 'dva-loading';
+import {useRouterHistory} from 'dva/router';
+import {createHashHistory} from 'history';
+import createLoading from 'dva-loading';
 import './index.css';
 
 const app = dva({
+	history: useRouterHistory(createHashHistory)({queryKey: false}),// 去除hashHistory下的 _k 查询参数
 	initialState: {
 		login: {
 			loginRedirect: '/'
@@ -10,7 +13,7 @@ const app = dva({
 	}
 });
 
-//app.use(createLoading());
+app.use(createLoading());
 
 app.model(require('../login/models/login'));
 app.model(require('../login/models/register'));
@@ -20,3 +23,4 @@ app.model(require('./models/userCenter'));
 app.router(require('./router'));
 
 app.start('#root');
+

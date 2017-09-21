@@ -6,6 +6,7 @@ import style from './css/DvaLoading.css';
 const DvaLoading = React.createClass({
 	render() {
 		let state = this.props.state;
+		if(state != null)
 		return (
 			<Spin size='large' spinning={state.global}>{this.props.children}</Spin>
 		);

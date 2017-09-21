@@ -10,8 +10,7 @@ const currentPath = '/login';
 const defaultState = {
   	account: '',
   	password: '',
-  	keepLogin: true,
-  	shouldLogin: true
+  	keepLogin: true
 };
 
 export default {
@@ -32,11 +31,7 @@ export default {
 	  	
 	  	keepLoginChange(state, {payload}) {
 	  		return {...state, keepLogin: payload};
-	  	}, 
-	  	
-	  	changeShouldLogin(state) {
-			return {...state, ...{shouldLogin: !state.shouldLogin}};
-		},
+	  	},
 		
 		resetState(state) {
 			return {...state, ...defaultState};
@@ -47,14 +42,15 @@ export default {
 	effects: {
 		
 		*login({payload}, {select, put}) {
-			const loginState = yield select(state => state.login);
-			let shouldLogin = loginState.shouldLogin;
-			let loginRedirect = loginState.loginRedirect; 
-			if(!shouldLogin) {
+			const loginState = yield select(state => ({
+				...state.login,
+				loading: state.loading.models.login
+			}));
+			console.log(loginState.loading)
+			if(loginState.loading) {
 				return;
-			} else {
-				yield put({type: 'changeShouldLogin'});
 			}
+			let loginRedirect = loginState.loginRedirect; 
 			let {account, password, keepLogin} = loginState;
 			let expire = keepLogin ? -1 : 1800;
 			if(!account || !(trim(account))) {
@@ -69,7 +65,6 @@ export default {
 					return;
 				}
 	  		}
-			yield put({type: 'changeShouldLogin'});
 		}
 		
 	},
