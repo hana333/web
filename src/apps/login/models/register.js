@@ -1,5 +1,4 @@
 import Toast from '../../../components/Toast';
-import key from '../../../utils/keymaster';
 import {Modal} from 'antd';
 import {routerRedux} from 'dva/router';
 import {validationRepeatEmail, registerByEmailAndRandom} from '../services/registerService';
@@ -13,8 +12,7 @@ const defaultState = {
 	random: '',
 	username: '',
 	password: '',
-	passwordComfirm: '',
-	shouldNext: true
+	passwordComfirm: ''
 };
 
 export default {
@@ -49,10 +47,6 @@ export default {
 			return {...state, ...{step: state.step + 1}};
 		},
 		
-		changeShouldNext(state) {
-			return {...state, ...{shouldNext: !state.shouldNext}};
-		},
-		
 		resetState(state) {
 			return {...state, ...defaultState};
 		}
@@ -61,15 +55,9 @@ export default {
 	
 	effects: {
 		
-		*stepNext(action, { select, put }) {
-			const registerState = yield select(state => state.register);
-			let shouldNext = registerState.shouldNext;
-			let doShouldNext = false;
-			if(!shouldNext) {
-				return;
-			} else {
-				yield put({type: 'changeShouldNext'});
-			}
+		*stepNext(action, {select, put}) {
+			let registerState = yield select(state => state.register);
+			let isNext = false;
 			let email = registerState.email;
 			let random = registerState.random;
 			let username = registerState.username;
@@ -88,13 +76,13 @@ export default {
 						break;
 					}
 					res = yield validationRepeatEmail(email);
-					if(res.res !== 1) {
+					if(!res || res.res !== 1) {
 						yield Toast.show(res.msg);
 						break;
 					}
 					res = yield emailRandom(email);
-					if(res.res === 1) {
-						yield doShouldNext = true;
+					if(res && res.res === 1) {
+						yield isNext = true;
 						break;
 					} else {
 						yield Toast.show(res.msg);
@@ -106,8 +94,8 @@ export default {
 						break;
 					}
 					res = yield checkEmailRandom(random, email);
-					if(res.res === 1) {
-						yield doShouldNext = true;
+					if(res && res.res === 1) {
+						yield isNext = true;
 						break;
 					} else {
 						yield Toast.show(res.msg);
@@ -146,8 +134,7 @@ export default {
 						break;
 					}
 			}
-			yield put({type: 'changeShouldNext'});
-			if(doShouldNext) yield put({type: 'stepNextComplete'});
+			if(isNext) yield put({type: 'stepNextComplete'});
 		}
 		
 	},
@@ -159,17 +146,6 @@ export default {
 		        if (pathname === currentPath) {
 		        	dispatch({type: 'resetState'});
 		        }
-			});
-		},
-		
-		enter({dispatch, history}) {
-			return key.routerBind({
-				history: history, 
-				path: currentPath, 
-				keyStr: 'enter', 
-				callback: function() {
-					dispatch({type: 'stepNext'});
-				}
 			});
 		}
 		

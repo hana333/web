@@ -1,5 +1,5 @@
 import fetch from 'dva/fetch';
-import {getLoginSession} from './web';
+import {getLoginSession} from '../plugins/loginSession';
 
 function parseJSON(response) {
     return response.json();
@@ -25,7 +25,7 @@ function formatOpt(data) {
 	    };
     }
     // 添加一个随机数，防止缓存
-    arr.push('v=' + Math.floor(Math.random() * 10000 + 500));
+    arr.push('_r=' + Math.floor(Math.random() * 10000 + 500));
     return arr.join('&');
 }
 

@@ -21,7 +21,14 @@ const Step1 = React.createClass({
 				<Row className={style.lineSpace}>
 					<Input 
 					prefix={<span className={style.preHint}>邮箱</span>} 
-					value={state.email}
+					value={state.email} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'forgetPassword/stepNext'
+							});
+						}
+					}} 
 					onChange={(e) => {
 						dispatch({
 							type: 'forgetPassword/emailChange',
@@ -72,14 +79,21 @@ const Step2 = React.createClass({
 							type: 'forgetPassword/randomChange',
 							payload: e.target.value
 						});
-					}}
+					}} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'forgetPassword/stepNext'
+							});
+						}
+					}} 
 					size='large'
 					type='text' 
 					placeholder='此处输入验证码' 
 					autoFocus />
 				</Row>
 				<Row>
-					<Button size='large' loading={!state.shouldNext} onClick={() => {
+					<Button size='large' loading={state.loading} onClick={() => {
 						dispatch({
 							type: 'forgetPassword/stepNext'
 						});
@@ -117,14 +131,21 @@ const Step3 = React.createClass({
 							type: 'forgetPassword/passwordChange',
 							payload: e.target.value
 						});
-					}}
+					}} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'forgetPassword/stepNext'
+							});
+						}
+					}} 
 					size='large'
 					type='password' 
 					placeholder='请输入新密码' 
 					autoFocus />
 				</Row>
 				<Row>
-					<Button type='primary' size='large' loading={!state.shouldNext} onClick={() => {
+					<Button type='primary' size='large' loading={state.loading} onClick={() => {
 						dispatch({
 							type: 'forgetPassword/stepNext'
 						});
@@ -138,7 +159,7 @@ const Step3 = React.createClass({
 	
 });
 
-function ForgetPasswordPage({state, loading, dispatch}) {
+function ForgetPasswordPage({state, dispatch}) {
 	let percent = state.step / 3 * 100;
 	let stepRectNode;
 	switch (state.step){
@@ -173,6 +194,6 @@ function ForgetPasswordPage({state, loading, dispatch}) {
 export default connect((state) => ({
 	state: {
 		...state.forgetPassword,
-		loading: state.loading.global
-	},
+		loading: state.loading.models.forgetPassword
+	}
 }))(ForgetPasswordPage);

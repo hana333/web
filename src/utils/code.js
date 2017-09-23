@@ -272,11 +272,11 @@ function uuid() {
 }
 
 export default {
-	hex_md5: hex_md5,
-	b64_md5: b64_md5,
-	str_md5: str_md5,
-	hex_hmac_md5: hex_hmac_md5,
-	b64_hmac_md5: b64_hmac_md5,
-	str_hmac_md5: str_hmac_md5,
-	uuid: uuid
+	hex_md5,
+	b64_md5,
+	str_md5,
+	hex_hmac_md5,
+	b64_hmac_md5,
+	str_hmac_md5,
+	uuid
 };

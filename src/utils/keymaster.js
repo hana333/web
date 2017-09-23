@@ -59,3 +59,17 @@ key.routerBind = function({history, path, keyStr, callback}) {
 }
 
 export default key;
+
+
+// demo
+
+//		enter({dispatch, history}) {
+//			return key.routerBind({
+//				history: history, 
+//				path: currentPath, 
+//				keyStr: 'enter', 
+//				callback: function() {
+//					dispatch({type: 'login'});
+//				}
+//			});
+//		}

@@ -1,6 +1,5 @@
 import request from '../../../utils/request';
 import {userCenter} from '../../../config/config';
-import {getToken} from '../../../utils/web';
 
 function loginMix(account, certificate, expire) {
 	return request(userCenter('/api/login/loginMix'), {
@@ -13,12 +12,7 @@ function loginMix(account, certificate, expire) {
 }
 
 function loginByToken() {
-	let token = getToken();
-	if(!token) {
-		return {
-			res: 0
-		};
-	}
+	// request中自动注入token
 	return request(userCenter('/api/login/loginByToken'), {
 		data: {
 			token: token

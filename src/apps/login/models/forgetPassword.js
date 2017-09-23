@@ -1,5 +1,4 @@
 import Toast from '../../../components/Toast';
-import key from '../../../utils/keymaster';
 import {Modal} from 'antd';
 import {routerRedux} from 'dva/router';
 import {emailRandom, checkEmailRandom} from '../services/randomService';
@@ -12,8 +11,7 @@ const defaultState = {
 	step: 1,
 	email: '',
 	random: '',
-	password: '',
-	shouldNext: true
+	password: ''
 };
 
 export default {
@@ -52,15 +50,13 @@ export default {
 	
 	effects: {
 		
-		*stepNext(action, { select, put }) {
+		*stepNext({type}, { select, put }) {
+			yield new Promise((resolve) => {
+				setTimeout(resolve, 5000)
+			})
+			let i = yield select(state => state);
 			const forgetPasswordState = yield select(state => state.forgetPassword);
-			let shouldNext = forgetPasswordState.shouldNext;
-			let doShouldNext = false;
-			if(!shouldNext) {
-				return;
-			} else {
-				yield put({type: 'changeShouldNext'});
-			}
+			let isNext = false;
 			let email = forgetPasswordState.email;
 			let random = forgetPasswordState.random;
 			let password = forgetPasswordState.password;
@@ -77,13 +73,13 @@ export default {
 						break;
 					}
 					res = yield validationExistEmail(email);
-					if(res.res !== 1 || !res.data) {
+					if(!res || res.res !== 1) {
 						Toast.show(res.msg);
 						break;
 					}
 					res = yield emailRandom(email);
-					if(res.res === 1) {
-						yield doShouldNext = true;
+					if(res && res.res === 1) {
+						yield isNext = true;
 						break;
 					} else {
 						yield Toast.show(res.msg);
@@ -95,8 +91,8 @@ export default {
 						break;
 					}
 					res = yield checkEmailRandom(random, email);
-					if(res.res === 1) {
-						yield doShouldNext = true;
+					if(res && res.res === 1) {
+						yield isNext = true;
 						break;
 					} else {
 						yield Toast.show(res.msg);
@@ -108,7 +104,7 @@ export default {
 						break;
 					}
 					res = yield updatePasswordByEmailAndRand(random, email, password);
-					if(res.res === 1) {
+					if(res && res.res === 1) {
 						yield new Promise((resolve) => {
 							Modal.success({
 								title: '重置成功',
@@ -127,8 +123,7 @@ export default {
 						break;
 					}
 			}
-			yield put({type: 'changeShouldNext'});
-			if(doShouldNext) yield put({type: 'stepNextComplete'});
+			if(isNext) yield put({type: 'stepNextComplete'});
 		}
 		
 	},
@@ -140,17 +135,6 @@ export default {
 		        if (pathname === currentPath) {
 		        	dispatch({type: 'resetState'});
 		        }
-			});
-		},
-		
-		enter({dispatch, history}) {
-			return key.routerBind({
-				history: history, 
-				path: currentPath, 
-				keyStr: 'enter', 
-				callback: function() {
-					dispatch({type: 'stepNext'});
-				}
 			});
 		}
 		

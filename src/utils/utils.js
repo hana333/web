@@ -1,4 +1,48 @@
-import code from './code';
+import {uuid} from './code';
+
+/**
+ * 序列化对象,但无法再序列化后拿回对象引用
+ * @param {Object} obj 将对象序列化为字符串(包括函数)
+ */
+function serialize(obj) {
+    let serStr = '';
+    function serializeInternal(o, path) {
+        for(let p in o) {
+            let value = o[p];
+            if(typeof value != "object") {
+                if(typeof value == "string") {
+                    serStr += "\n" + path + "[" + (isNaN(p) ? "\"" + p + "\"" : p) + "] = " + "\"" + value.replace(/\"/g, "\\\"") + "\"" + ";";
+                } else {
+                    serStr += "\n" + path + "[" + (isNaN(p) ? "\"" + p + "\"" : p) + "] = " + value + ";";
+                }
+            } else {
+                if(value instanceof Array) {
+                    serStr += "\n" + path + "[" + (isNaN(p) ? "\"" + p + "\"" : p) + "]" + "=" + "new Array();";
+                    serializeInternal(value, path + "[" + (isNaN(p) ? "\"" + p + "\"" : p) + "]");
+                } else {
+                    serStr += "\n" + path + "[" + (isNaN(p) ? "\"" + p + "\"" : p) + "]" + "=" + "new Object();";
+                    serializeInternal(value, path + "[" + (isNaN(p) ? "\"" + p + "\"" : p) + "]");
+                }
+            }
+        }
+    }
+    serializeInternal(obj, 'deserializeObj');
+    return toJson({
+    	serJsonObj: toJson(obj),
+    	serStr: serStr
+    });
+}
+
+/**
+ * 反序列化
+ * @param {Object} serializeStr 由序列化方法生成的子串
+ */
+function deserialize(serializeObj) {
+	let deserializeObj = serializeObj.serJsonObj || {};
+	console.log(serializeObj.serStr)
+	eval(serializeObj.serStr);
+	return deserializeObj;
+}
 
 /**
  * 对象克隆
@@ -54,7 +98,7 @@ function ref(obj) {
 				default:
 					let refKey = '__ref__key__';
 					if(!obj.hasOwnProperty(refKey)) {
-						obj[refKey] = code.uuid();
+						obj[refKey] = uuid();
 					}
 					return '@:' + obj[refKey];
 			}
@@ -327,23 +371,25 @@ function closeWindow() {
 }
 
 export default {
-	clone: clone,
-	ref: ref,
-	equals: equals,
-	toJson: toJson,
-	fromJson: fromJson,
-	trim: trim,
-	gcd: gcd,
-	dtf: dtf,
-	dateFormat: dateFormat,
-	toDate: toDate,
-	scrollTop: scrollTop,
-	scrollHeight: scrollHeight,
-	isTop: isTop,
-	isBottom: isBottom,
-	clientHeight: clientHeight,
-	clientWidth: clientWidth,
-	offsetHeight: offsetHeight,
-	isMobile: isMobile,
-	closeWindow: closeWindow
+	serialize,
+	deserialize,
+	clone,
+	ref,
+	equals,
+	toJson,
+	fromJson,
+	trim,
+	gcd,
+	dtf,
+	dateFormat,
+	toDate,
+	scrollTop,
+	scrollHeight,
+	isTop,
+	isBottom,
+	clientHeight,
+	clientWidth,
+	offsetHeight,
+	isMobile,
+	closeWindow
 };

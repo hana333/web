@@ -1,6 +1,6 @@
 import React from 'react';
-import { Row, Col, Icon, Input, Button, Progress } from 'antd';
-import { connect } from 'dva';
+import {Row, Col, Icon, Input, Button, Progress} from 'antd';
+import {connect} from 'dva';
 import style from './css/RegisterPage.css';
 
 const Step1 = React.createClass({
@@ -28,7 +28,14 @@ const Step1 = React.createClass({
 				<Row className={style.lineSpace}>
 					<Input 
 					prefix={<span className={style.preHint}>邮箱</span>} 
-					value={state.email}
+					value={state.email} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'register/stepNext'
+							});
+						}
+					}} 
 					onChange={(e) => {
 						dispatch({
 							type: 'register/emailChange',
@@ -43,7 +50,7 @@ const Step1 = React.createClass({
 				<Row>
 					<Button 
 					size='large' 
-					loading={!state.shouldNext} 
+					loading={state.loading} 
 					onClick={() => {
 						dispatch({
 							type: 'register/stepNext'
@@ -82,7 +89,14 @@ const Step2 = React.createClass({
 							type: 'register/randomChange',
 							payload: e.target.value
 						});
-					}}
+					}} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'register/stepNext'
+							});
+						}
+					}} 
 					size='large'
 					type='text' 
 					placeholder='此处输入验证码' 
@@ -91,7 +105,7 @@ const Step2 = React.createClass({
 				<Row>
 					<Button 
 					size='large' 
-					loading={!state.shouldNext} 
+					loading={state.loading} 
 					onClick={() => {
 						dispatch({
 							type: 'register/stepNext'
@@ -130,7 +144,14 @@ const Step3 = React.createClass({
 							type: 'register/usernameChange',
 							payload: e.target.value
 						});
-					}}
+					}} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'register/stepNext'
+							});
+						}
+					}} 
 					size='large'
 					type='text' 
 					placeholder='请输入你的用户名' 
@@ -143,7 +164,14 @@ const Step3 = React.createClass({
 							type: 'register/passwordChange',
 							payload: e.target.value
 						});
-					}}
+					}} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'register/stepNext'
+							});
+						}
+					}} 
 					size='large'
 					type='password' 
 					placeholder='请输入你的密码' />
@@ -155,7 +183,14 @@ const Step3 = React.createClass({
 							type: 'register/passwordComfirmChange',
 							payload: e.target.value
 						});
-					}}
+					}} 
+					onKeyUp={(e) => {
+						if(e.keyCode === 13) {
+							dispatch({
+								type: 'register/stepNext'
+							});
+						}
+					}} 
 					size='large'
 					type='password' 
 					placeholder='请确认你的密码' />
@@ -164,7 +199,7 @@ const Step3 = React.createClass({
 					<Button 
 					type='primary' 
 					size='large' 
-					loading={!state.shouldNext} 
+					loading={state.loading} 
 					onClick={() => {
 						dispatch({
 							type: 'register/stepNext'
@@ -212,5 +247,8 @@ function RegisterPage({state, dispatch}) {
 }
 
 export default connect((state) => ({
-	state: state.register
+	state: {
+		...state.register,
+		loading: state.loading.models.register
+	}
 }))(RegisterPage);

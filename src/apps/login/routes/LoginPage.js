@@ -25,6 +25,15 @@ function LoginPage({state, dispatch}) {
 							payload: e.target.value
 						});
 					}} 
+					onKeyUp={
+						(e) => {
+							if(e.keyCode === 13) {
+								dispatch({
+									type: 'login/login'
+								});
+							}
+						}
+					} 
 					prefix={<Icon type='user' style={{ fontSize: 13 }}/>} 
 					size='large'
 					type='text' 
@@ -41,6 +50,15 @@ function LoginPage({state, dispatch}) {
 							payload: e.target.value
 						});
 					}} 
+					onKeyUp={
+						(e) => {
+							if(e.keyCode === 13) {
+								dispatch({
+									type: 'login/login'
+								});
+							}
+						}
+					} 
 					size='large'
 					type='password' 
 					placeholder='密码' />
@@ -93,6 +111,8 @@ function LoginPage({state, dispatch}) {
 }
 
 export default connect((state) => ({
-	state: state.login,
-	loading: state.loading.models.login
+	state: {
+		...state.login,
+		loading: state.loading.models.login
+	}
 }))(LoginPage);

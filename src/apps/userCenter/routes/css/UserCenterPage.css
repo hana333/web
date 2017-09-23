@@ -35,6 +35,15 @@
 	padding: 0 24px;
 }
 
+.contentTitle {
+	margin-bottom: 15px;
+}
+
+.opButton {
+	margin-left: 4px;
+	margin-right: 3px;
+}
+
 .headPromp {
 	font-size: 16px;
 	float: right;
@@ -42,11 +51,14 @@
 
 .exitButton {
 	position: relative;
-	top: -1px;
-	border-radius: 0;
+	top: -2px;
 }
 
 :global(.ant-spin-container),
 :global(.ant-spin-nested-loading) {
 	height: 100%;
+}
+
+:global(.ant-table-title) {
+	padding: 8px 0;
 }

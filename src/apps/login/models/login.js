@@ -1,8 +1,7 @@
 import Toast from '../../../components/Toast';
-import key from '../../../utils/keymaster';
 import {trim} from '../../../utils/utils';
 import {routerRedux} from 'dva/router';
-import {setLoginSession} from '../../../utils/web';
+import {setLoginSession} from '../../../plugins/loginSession';
 import {loginMix} from '../services/loginService';
 
 const currentPath = '/login';
@@ -42,14 +41,7 @@ export default {
 	effects: {
 		
 		*login({payload}, {select, put}) {
-			const loginState = yield select(state => ({
-				...state.login,
-				loading: state.loading.models.login
-			}));
-			console.log(loginState.loading)
-			if(loginState.loading) {
-				return;
-			}
+			const loginState = yield select(state => state.login);
 			let loginRedirect = loginState.loginRedirect; 
 			let {account, password, keepLogin} = loginState;
 			let expire = keepLogin ? -1 : 1800;
@@ -59,8 +51,8 @@ export default {
 				yield Toast.show('密码不能为空');
 	  		} else {
 	  			let res = yield loginMix(account, password, expire);
-				if(res.res === 1) {
-					yield setLoginSession(res.data, res.data.loginCycle * 1000);// 置入loginSession
+				if(res && res.res === 1) {
+					setLoginSession(res.data);
 					if(loginRedirect) yield put(routerRedux.push(loginRedirect));
 					return;
 				}
@@ -76,17 +68,6 @@ export default {
 		        if (pathname === currentPath) {
 		        	dispatch({type: 'resetState'});
 		        }
-			});
-		},
-		
-		enter({dispatch, history}) {
-			return key.routerBind({
-				history: history, 
-				path: currentPath, 
-				keyStr: 'enter', 
-				callback: function() {
-					dispatch({type: 'login'});
-				}
 			});
 		}
 		

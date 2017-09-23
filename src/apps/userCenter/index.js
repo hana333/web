@@ -1,26 +1,43 @@
-import dva from 'dva';
-import {useRouterHistory} from 'dva/router';
-import {createHashHistory} from 'history';
+// init
+import {init} from '../../utils/app';
+// plugins
 import createLoading from 'dva-loading';
+import createEffectLock from '../../plugins/effectLock';
+import {createWebLocalStore, getWebState} from '../../plugins/webLocalStore';
+import {createLoginSession} from '../../plugins/loginSession';
+// models
+import login from '../login/models/login';
+import register from '../login/models/register';
+import forgetPassword from '../login/models/forgetPassword';
+import userCenter from './models/userCenter';
+// router
+import router from './router';
+// css
 import './index.css';
 
-const app = dva({
-	history: useRouterHistory(createHashHistory)({queryKey: false}),// 去除hashHistory下的 _k 查询参数
-	initialState: {
-		login: {
-			loginRedirect: '/'
-		}
-	}
+let initialState = getWebState() || {
+    login: {
+        loginRedirect: '/'
+    }
+};
+// 重置插件属性
+if(initialState.loading) delete initialState.loading;// 重置loading
+if(initialState.effectLock) delete initialState.effectLock;// 重置effectlock
+
+const dvaApp = init({
+    initialState: initialState,
+    plugins: [
+        createWebLocalStore(),
+        createLoginSession(),
+        createLoading(),
+        createEffectLock()
+    ],
+    models: [
+        login,
+        register,
+        forgetPassword,
+        userCenter
+    ],
+    router: router,
+    start: '#root'
 });
-
-app.use(createLoading());
-
-app.model(require('../login/models/login'));
-app.model(require('../login/models/register'));
-app.model(require('../login/models/forgetPassword'));
-app.model(require('./models/userCenter'));
-
-app.router(require('./router'));
-
-app.start('#root');
-
