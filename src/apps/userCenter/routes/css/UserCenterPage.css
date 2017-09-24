@@ -54,11 +54,17 @@
 	top: -2px;
 }
 
-:global(.ant-spin-container),
-:global(.ant-spin-nested-loading) {
+:global(.user-center-container),
+:global(.user-center-container .ant-spin-container),
+:global(.user-center-container .ant-spin-nested-loading) {
 	height: 100%;
 }
 
-:global(.ant-table-title) {
+:global(.user-center-container .ant-table-title) {
 	padding: 8px 0;
+}
+
+:global(.user-center-container .modal-container .ant-input) {
+	font-size: 15px;
+	border-radius: 0px;
 }

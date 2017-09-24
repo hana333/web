@@ -1,5 +1,6 @@
 html, body, :global(#root) {
 	height: 100%;
+	min-width:1220px;
 	background-color: #F5F5F9;
 }
 

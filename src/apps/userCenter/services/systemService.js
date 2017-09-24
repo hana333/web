@@ -41,6 +41,16 @@ function pageGroup(pageNum = 1, pageSize = 10, searchId) {
     });
 }
 
+function addUser() {
+	return request(userCenter('/api/system/pageGroup'), {
+        data: {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            searchId: searchId
+        }
+    });
+}
+
 export default {
     pageGroup,
     pageUser,

@@ -1,23 +1,67 @@
 import Toast from '../../../components/Toast';
 import {Modal} from 'antd';
 import {routerRedux} from 'dva/router';
+import {clone, merge} from '../../../utils/utils';
 import {getLoginSession, removeLoginSession} from '../../../plugins/loginSession';
 import {pageUser, pageRole, pagePermission, pageGroup} from '../services/systemService';
-
-const USER = '用户管理';
-const ROLE = '角色管理';
-const PERMISSION = '权限管理';
-const GROUP = '组管理';
 
 const currentPath = '/';
 
 const defaultState = {
-	tab: '用户管理',
 	username: '',
 	userData: [],
 	roleData: [],
 	permissionData: [],
-	groupData: []
+	groupData: [],
+	modalVisible: false,
+	modalTitle: '',
+	modalInputItems: [],
+	modules: {
+		user: {
+			title: '用户管理',
+			active: true,
+			items: [
+				{key: 'userId', value: '序号'},
+				{key: 'username', value: '用户名'}, 
+				{key: 'password', value: '密码'},
+				{key: 'email', value: '邮箱'}, 
+				{key: 'mobilePhone', value: '手机'},
+				{key: 'createTime', value: '创建时间'}
+			],
+			data: []
+		},
+		role: {
+			title: '角色管理',
+			active: false,
+			items: [
+				{key: 'roleId', value: '序号'},
+				{key: 'role', value: '角色'}, 
+				{key: 'description', value: '描述'}
+			],
+			data: []
+		},
+		permission: {
+			title: '权限管理',
+			active: false,
+			items: [
+				{key: 'permissionId', value: '序号'},
+				{key: 'permission', value: '权限'}, 
+				{key: 'description', value: '描述'}
+			],
+			data: []
+		},
+		group: {
+			title: '组管理',
+			active: false,
+			items: [
+				{key: 'groupId', value: '序号'},
+				{key: 'group', value: '组'}, 
+				{key: 'description', value: '描述'},
+				{key: 'type', value: '类型'}
+			],
+			data: []
+		}
+	}
 };
 
 export default {
@@ -29,31 +73,47 @@ export default {
 	reducers: {
 		
 		initComplete(state, {payload}) {
-			return {...state, ...{username: payload.username}};
+			return merge(state, {username: payload.username});
 		},
 		
 		changeUserData(state, {payload}) {
-			return {...state, ...{userData: payload}};
+			return merge(state, {modules: {user: {data: payload}}});
 		},
 		
 		changeRoleData(state, {payload}) {
-			return {...state, ...{roleData: payload}};
+			return merge(state, {modules: {role: {data: payload}}});
 		},
 		
 		changePermissionData(state, {payload}) {
-			return {...state, ...{permissionData: payload}};
+			return merge(state, {modules: {permission: {data: payload}}});
 		},
 		
 		changeGroupData(state, {payload}) {
-			return {...state, ...{groupData: payload}};
+			return merge(state, {modules: {group: {data: payload}}});
 		},
 		
 		changeTabComplete(state, {payload}) {
-			return {...state, ...{tab: payload}};
+			let stateClone = clone(state);
+			let modules = stateClone.modules;
+			for(let k in modules) {
+				if(modules[k].title === payload) {
+					modules[k].active = true;
+				} else {
+					modules[k].active = false;
+				}
+			}
+			return stateClone;
+		},
+		
+		changeModal(state, {payload: {modalVisible, modalTitle}}) {
+			return merge(state, {
+				modalVisible: modalVisible, 
+				modalTitle: modalTitle
+			});
 		},
 		
 		resetState() {
-			return {...defaultState};
+			return merge(defaultState);
 		}
 
 	},
@@ -66,11 +126,9 @@ export default {
 			if(loginSession) {
 				yield put({
 					type: 'initComplete', 
-					payload: {
-						username: loginSession.username
-					}
+					payload: {username: loginSession.username}
 				});
-				yield put({type: 'changeTab', payload: userCenterState.tab});
+				yield put({type: 'changeTab', payload: userCenterState.modules.user.title});
 			} else {
 				yield put(routerRedux.push('/login'));
 				yield Toast.show('请先登录');
@@ -82,19 +140,20 @@ export default {
 			yield put(routerRedux.push('/login'));
 		},
 		
-		*changeTab({payload}, {put}) {
+		*changeTab({payload}, {select, put}) {
 			yield put({type: 'changeTabComplete', payload: payload});
+			let userCenterState = yield select(state => state.userCenter);
 			switch (payload){
-				case USER:
+				case userCenterState.modules.user.title:
 					yield put({type: 'user'});
 					break;
-				case ROLE:
+				case userCenterState.modules.role.title:
 					yield put({type: 'role'});
 					break;
-				case PERMISSION:
+				case userCenterState.modules.permission.title:
 					yield put({type: 'permission'});
 					break;
-				case GROUP:
+				case userCenterState.modules.group.title:
 					yield put({type: 'group'});
 					break;
 			}
@@ -152,6 +211,10 @@ export default {
 			} else {
 				yield Toast.show(res.msg);
 			}
+		},
+		
+		*addUser() {
+			
 		}
 		
 	},

@@ -75,6 +75,19 @@ function clone(obj) {
 }
 
 /**
+ * 对象深度合并,已obj2为目标更新obj1对象
+ * @param {Object} obj1
+ * @param {Object} obj2
+ */
+function merge(obj1={}, obj2={}) {
+	let _obj1 = clone(obj1);
+	let _obj2 = clone(obj2);
+	let key;
+	for(key in _obj2) _obj1[key] = _obj1[key] && _obj1[key].toString() === "[object Object]" ? merge(_obj1[key], _obj2[key]) : _obj1[key] = _obj2[key];
+	return _obj1;
+}
+
+/**
  * 获取对象唯一引用
  * @param {Object} obj
  */
@@ -374,6 +387,7 @@ export default {
 	serialize,
 	deserialize,
 	clone,
+	merge,
 	ref,
 	equals,
 	toJson,
