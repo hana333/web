@@ -5,6 +5,114 @@ import {clone, merge} from '../../../utils/utils';
 import {getLoginSession, removeLoginSession} from '../../../plugins/loginSession';
 import {pageUser, pageRole, pagePermission, pageGroup} from '../services/systemService';
 
+// 前缀_模块
+const MODULE_USER = '用户管理';
+const MODULE_ROLE = '角色管理';
+const MODULE_PERMISSION = '权限管理';
+const MODULE_GROUP = '组管理';
+
+// 前缀_模块_操作
+const OP_USER_ADD = 'OP_USER_ADD';
+const OP_USER_UPDATE = 'OP_USER_UPDATE';
+const OP_USER_DELETE = 'OP_USER_DELETE';
+const OP_USER_OWNER_ROLE = 'OP_USER_OWNER_ROLE';
+const OP_USER_CANCEL_ROLE = 'OP_USER_CANCEL_ROLE';
+const OP_USER_ADD_ROLE = 'OP_USER_ADD_ROLE';
+
+const OP_ROLE_ADD = 'OP_ROLE_ADD';
+const OP_ROLE_UPDATE = 'OP_ROLE_UPDATE';
+const OP_ROLE_DELETE = 'OP_ROLE_DELETE';
+const OP_ROLE_OWNER_PERMISSION = 'OP_ROLE_OWNER_PERMISSION';
+const OP_ROLE_CANCEL_PERMISSION = 'OP_ROLE_CANCEL_PERMISSION';
+const OP_ROLE_ADD_PERMISSION = 'OP_ROLE_ADD_PERMISSION';
+
+const OP_PERMISSION_ADD = 'OP_PERMISSION_ADD';
+const OP_PERMISSION_UPDATE = 'OP_PERMISSION_UPDATE';
+const OP_PERMISSION_DELETE = 'OP_PERMISSION_DELETE';
+
+const OP_GROUP_ADD = 'OP_GROUP_ADD';
+const OP_GROUP_UPDATE = 'OP_GROUP_UPDATE';
+const OP_GROUP_DELETE = 'OP_GROUP_DELETE';
+const OP_GROUP_ADD_USER = 'OP_GROUP_ADD_USER';
+const OP_GROUP_ADD_ROLE = 'OP_GROUP_ADD_ROLE';
+const OP_GROUP_ADD_PERMISSION = 'OP_GROUP_ADD_PERMISSION';
+const OP_GROUP_OWNER = 'OP_GROUP_OWNER';
+const OP_GROUP_CANCEL = 'OP_GROUP_CANCEL';
+
+const MODAL_TYPE_INPUT = 'MODAL_TYPE_INPUT';
+const MODAL_TYPE_TABLE = 'MODAL_TYPE_TABLE';
+const MODAL_TYPE_COMFIRM = 'MODAL_TYPE_COMFIRM';
+
+function getOpName(op) {
+	let name;
+	switch (op) {
+		case OP_USER_ADD:
+			name = '添加用户';
+			break;
+		case OP_USER_UPDATE:
+			name = '更新';
+			break;
+		case OP_USER_DELETE:
+			name = '删除';
+			break;
+		case OP_USER_OWNER_ROLE:
+			name = '拥有角色';
+			break;
+		case OP_USER_CANCEL_ROLE:
+			name = '取消角色';
+			break;
+		case OP_USER_ADD_ROLE:
+			name = '添加角色';
+			break;
+		case OP_ROLE_ADD:
+			name = '添加角色';
+			break;
+		case OP_ROLE_UPDATE:
+			name = '更新';
+			break;
+		case OP_ROLE_DELETE:
+			name = '删除';
+			break;
+		case OP_ROLE_OWNER_PERMISSION:
+			name = '拥有权限';
+			break;
+		case OP_ROLE_CANCEL_PERMISSION:
+			name = '取消权限';
+			break;
+		case OP_ROLE_ADD_PERMISSION:
+			name = '添加权限';
+			break;
+		case OP_PERMISSION_ADD:
+			name = '添加权限';
+			break;
+		case OP_PERMISSION_UPDATE:
+			name = '更新';
+			break;
+		case OP_PERMISSION_DELETE:
+			name = '删除';
+			break;
+		case OP_GROUP_ADD:
+			name = '添加组';
+			break;
+		case OP_GROUP_ADD_USER:
+			name = '添加用户';
+			break;
+		case OP_GROUP_ADD_ROLE:
+			name = '添加角色';
+			break;
+		case OP_GROUP_ADD_PERMISSION:
+			name = '添加权限';
+			break;
+		case OP_GROUP_OWNER:
+			name = '查看成员';
+			break;
+		case OP_GROUP_CANCEL:
+			name = '取消成员';
+			break;
+	}
+	return name;
+}
+
 const currentPath = '/';
 
 const defaultState = {
@@ -13,53 +121,91 @@ const defaultState = {
 	roleData: [],
 	permissionData: [],
 	groupData: [],
-	modalVisible: false,
-	modalTitle: '',
-	modalInputItems: [],
+	modal: {
+		visible: false,
+		title: '',
+		inputs: {},
+		op: undefined,
+		type: undefined
+	},
 	modules: {
 		user: {
-			title: '用户管理',
+			title: MODULE_USER,
 			active: true,
 			items: [
-				{key: 'userId', value: '序号'},
-				{key: 'username', value: '用户名'}, 
-				{key: 'password', value: '密码'},
-				{key: 'email', value: '邮箱'}, 
-				{key: 'mobilePhone', value: '手机'},
-				{key: 'createTime', value: '创建时间'}
+				{key: 'userId', value: '序号', edit: false},
+				{key: 'username', value: '用户名', edit: true}, 
+				{key: 'password', value: '密码', edit: true},
+				{key: 'email', value: '邮箱', edit: true}, 
+				{key: 'mobilePhone', value: '手机', edit: true},
+				{key: 'createTime', value: '创建时间', edit: true}
 			],
-			data: []
+			data: [],
+			topOps: [
+				OP_USER_ADD
+			],
+			ops: [
+				OP_USER_UPDATE,
+				OP_USER_DELETE,
+				OP_USER_OWNER_ROLE,
+				OP_USER_ADD_ROLE
+			]
 		},
 		role: {
-			title: '角色管理',
+			title: MODULE_ROLE,
 			active: false,
 			items: [
-				{key: 'roleId', value: '序号'},
-				{key: 'role', value: '角色'}, 
-				{key: 'description', value: '描述'}
+				{key: 'roleId', value: '序号', edit: false},
+				{key: 'role', value: '角色', edit: true}, 
+				{key: 'description', value: '描述', edit: true}
 			],
-			data: []
+			data: [],
+			topOps: [
+				OP_ROLE_ADD
+			],
+			ops: [
+				OP_ROLE_UPDATE,
+				OP_ROLE_DELETE,
+				OP_ROLE_OWNER_PERMISSION,
+				OP_ROLE_ADD_PERMISSION
+			]
 		},
 		permission: {
-			title: '权限管理',
+			title: MODULE_PERMISSION,
 			active: false,
 			items: [
-				{key: 'permissionId', value: '序号'},
-				{key: 'permission', value: '权限'}, 
-				{key: 'description', value: '描述'}
+				{key: 'permissionId', value: '序号', edit: false},
+				{key: 'permission', value: '权限', edit: true}, 
+				{key: 'description', value: '描述', edit: true}
 			],
-			data: []
+			data: [],
+			topOps: [
+				OP_PERMISSION_ADD
+			],
+			ops: [
+				OP_PERMISSION_UPDATE,
+				OP_PERMISSION_DELETE
+			]
 		},
 		group: {
-			title: '组管理',
+			title: MODULE_GROUP,
 			active: false,
 			items: [
-				{key: 'groupId', value: '序号'},
-				{key: 'group', value: '组'}, 
-				{key: 'description', value: '描述'},
-				{key: 'type', value: '类型'}
+				{key: 'groupId', value: '序号', edit: false},
+				{key: 'group', value: '组', edit: true}, 
+				{key: 'description', value: '描述', edit: true},
+				{key: 'type', value: '类型', edit: true}
 			],
-			data: []
+			data: [],
+			topOps: [
+				OP_GROUP_ADD
+			],
+			ops: [
+				OP_GROUP_ADD_USER,
+				OP_GROUP_ADD_ROLE,
+				OP_GROUP_ADD_PERMISSION,
+				OP_GROUP_OWNER
+			]
 		}
 	}
 };
@@ -105,10 +251,20 @@ export default {
 			return stateClone;
 		},
 		
-		changeModal(state, {payload: {modalVisible, modalTitle}}) {
+		changeModalComplete(state, {payload: {modalVisible, modalOp, modalType}}) {
 			return merge(state, {
-				modalVisible: modalVisible, 
-				modalTitle: modalTitle
+				modal: {
+					visible: modalVisible,
+					title: getOpName(modalOp),
+					op: modalOp,
+					type: modalType
+				}
+			});
+		},
+		
+		changeModalInput(state, {payload: {key, value}}) {
+			return merge(state, {
+				modalInputs: {key: value}
 			});
 		},
 		
@@ -174,13 +330,11 @@ export default {
 		
 		*role(action, {put}) {
 			let res = yield pageRole();
-			
 			if(res && res.res === 1) {
 				let roleData = res.data.list || [];
 				for(let i = 0; i < roleData.length; i ++) {
 					roleData[i].key = roleData[i].roleId;
 				}
-				console.log(roleData)
 				yield put({type: 'changeRoleData', payload: roleData});
 			} else {
 				yield Toast.show(res.msg);
@@ -213,8 +367,121 @@ export default {
 			}
 		},
 		
-		*addUser() {
-			
+		*changeModal({payload: {modalVisible, modalOp}}, {put}) {
+			let modalType;
+			switch (modalOp) {
+				case OP_USER_ADD:
+				case OP_ROLE_ADD:
+				case OP_PERMISSION_ADD:
+				case OP_GROUP_ADD:
+				case OP_USER_UPDATE:
+				case OP_ROLE_UPDATE:
+				case OP_PERMISSION_UPDATE:
+				case OP_GROUP_UPDATE:
+					modalType = MODAL_TYPE_INPUT;
+					break;
+				case OP_USER_DELETE:
+				case OP_ROLE_DELETE:
+				case OP_PERMISSION_DELETE:
+				case OP_GROUP_DELETE:
+				case OP_USER_CANCEL_ROLE:
+				case OP_ROLE_CANCEL_PERMISSION:
+				case OP_GROUP_CANCEL:
+					modalType = MODAL_TYPE_COMFIRM;
+					break;
+				case OP_USER_OWNER_ROLE:
+				case OP_ROLE_OWNER_PERMISSION:
+				case OP_GROUP_OWNER:
+				case OP_USER_ADD_ROLE:
+				case OP_ROLE_ADD_PERMISSION:
+				case OP_GROUP_ADD_USER:
+				case OP_GROUP_ADD_ROLE:
+				case OP_GROUP_ADD_PERMISSION:
+					modalType = MODAL_TYPE_TABLE;
+					break;
+			}
+			yield put({type: 'changeModalComplete', payload: {modalVisible, modalOp, modalType}});
+			yield setTimeout(() => {
+				if(modalVisible) {
+					let firstInputDom = document.querySelector('.modal-container input');
+					if(firstInputDom) firstInputDom.focus();
+				}
+			},300);
+		},
+		
+		*modalOk(action, {select, put}) {
+			let userCenterState = yield select(state => state.userCenter);
+			let modalOp = userCenterState.modalOp;
+			let modalInputs = userCenterState.modalInputs;
+			switch (modalOp) {
+				case OP_USER_ADD:
+					console.log(modalInputs);
+					break;
+				case OP_USER_UPDATE:
+				
+					break;
+				case OP_USER_DELETE:
+				
+					break;
+				case OP_USER_OWNER_ROLE:
+				
+					break;
+				case OP_USER_CANCEL_ROLE:
+				
+					break;
+				case OP_USER_ADD_ROLE:
+				
+					break;
+				case OP_ROLE_ADD:
+				
+					break;
+				case OP_ROLE_UPDATE:
+				
+					break;
+				case OP_ROLE_DELETE:
+				
+					break;
+				case OP_ROLE_OWNER_PERMISSION:
+				
+					break;
+				case OP_ROLE_CANCEL_PERMISSION:
+				
+					break;
+				case OP_ROLE_ADD_PERMISSION:
+				
+					break;
+				case OP_PERMISSION_ADD:
+				
+					break;
+				case OP_PERMISSION_UPDATE:
+				
+					break;
+				case OP_PERMISSION_DELETE:
+				
+					break;
+				case OP_GROUP_ADD:
+				
+					break;
+				case OP_GROUP_ADD_USER:
+				
+					break;
+				case OP_GROUP_ADD_ROLE:
+				
+					break;
+				case OP_GROUP_ADD_PERMISSION:
+				
+					break;
+				case OP_GROUP_OWNER:
+				
+					break;
+				case OP_GROUP_CANCEL:
+				
+					break;
+			}
+			yield put({
+				type: 'changeModal',
+				payload: {modalVisible: false}
+			});
 		}
 		
 	},
@@ -230,6 +497,44 @@ export default {
 			});
 		}
 		
-	}
-
+	},
+	
+	MODULE_USER,
+	MODULE_ROLE,
+	MODULE_PERMISSION,
+	MODULE_GROUP,
+	
+	OP_USER_ADD,
+	OP_USER_UPDATE,
+	OP_USER_DELETE,
+	OP_USER_OWNER_ROLE,
+	OP_USER_CANCEL_ROLE,
+	OP_USER_ADD_ROLE,
+	
+	OP_ROLE_ADD,
+	OP_ROLE_UPDATE,
+	OP_ROLE_DELETE,
+	OP_ROLE_OWNER_PERMISSION,
+	OP_ROLE_CANCEL_PERMISSION,
+	OP_ROLE_ADD_PERMISSION,
+	
+	OP_PERMISSION_ADD,
+	OP_PERMISSION_UPDATE,
+	OP_PERMISSION_DELETE,
+	
+	OP_GROUP_ADD,
+	OP_GROUP_UPDATE,
+	OP_GROUP_DELETE,
+	OP_GROUP_ADD_USER,
+	OP_GROUP_ADD_ROLE,
+	OP_GROUP_ADD_PERMISSION,
+	OP_GROUP_OWNER,
+	OP_GROUP_CANCEL,
+	
+	MODAL_TYPE_INPUT,
+	MODAL_TYPE_TABLE,
+	MODAL_TYPE_COMFIRM,
+	
+	getOpName
+	
 }

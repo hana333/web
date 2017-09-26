@@ -1,5 +1,3 @@
-//import {Router, Route, IndexRoute} from 'dva/router';
-//import DvaLoading from '../../components/DvaLoading';
 import {Router, Route} from 'dva/router';
 import LoginPage from '../login/routes/LoginPage';
 import RegisterPage from '../login/routes/RegisterPage';
