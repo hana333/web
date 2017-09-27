@@ -1,9 +1,12 @@
-//const userCenterUrl = 'http://127.0.0.1/user-center';
+const userCenterUrl = 'http://127.0.0.1/user-center';
 const resourceUrl = 'http://127.0.0.1/resource';
 const blogUrl = 'http://127.0.0.1/resource';
 const eduUrl = 'http://127.0.0.1/edu';
 
-const userCenterUrl = 'http://www.j1kj.cn/user-center';
+//const userCenterUrl = 'http://www.j1kj.cn/user-center';
+//const resourceUrl = 'http://www.j1kj.cn/resource';
+//const blogUrl = 'http://www.j1kj.cn/resource';
+//const eduUrl = 'http://www.j1kj.cn/edu';
 
 function autoUrl(pre, api) {
 	return pre + api;

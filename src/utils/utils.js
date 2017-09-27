@@ -75,7 +75,7 @@ function clone(obj) {
 }
 
 /**
- * 对象深度合并,已obj2为目标更新obj1对象
+ * 对象深度合并
  * @param {Object} obj1
  * @param {Object} obj2
  */

@@ -59,6 +59,10 @@
 	margin-bottom: 5px;
 }
 
+.modalComfirmText {
+	font-size: 15px;
+}
+
 :global(.user-center-container),
 :global(.user-center-container .ant-spin-container),
 :global(.user-center-container .ant-spin-nested-loading) {

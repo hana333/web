@@ -7,25 +7,20 @@ import {
 	MODULE_ROLE,
 	MODULE_PERMISSION,
 	MODULE_GROUP,
-	
 	OP_USER_ADD,
 	OP_USER_UPDATE,
-	OP_USER_DELETE,
 	OP_USER_OWNER_ROLE,
 	OP_USER_CANCEL_ROLE,
 	OP_USER_ADD_ROLE,
-	
 	OP_ROLE_ADD,
 	OP_ROLE_UPDATE,
 	OP_ROLE_DELETE,
 	OP_ROLE_OWNER_PERMISSION,
 	OP_ROLE_CANCEL_PERMISSION,
 	OP_ROLE_ADD_PERMISSION,
-	
 	OP_PERMISSION_ADD,
 	OP_PERMISSION_UPDATE,
 	OP_PERMISSION_DELETE,
-	
 	OP_GROUP_ADD,
 	OP_GROUP_UPDATE,
 	OP_GROUP_DELETE,
@@ -34,25 +29,24 @@ import {
 	OP_GROUP_ADD_PERMISSION,
 	OP_GROUP_OWNER,
 	OP_GROUP_CANCEL,
-	
 	MODAL_TYPE_INPUT,
-	MODAL_TYPE_TABLE,
+	MODAL_TYPE_LIST,
 	MODAL_TYPE_COMFIRM,
-	
 	getOpName
 } from '../models/userCenter';
 import style from './css/UserCenterPage.css';
 
 const {Header, Content, Sider, Footer} = Layout;
 
-function buildOpButton(op = [], dispatch) {
+function buildOpButton(op = [], dispatch, record) {
 	return (
 		<Button key={uuid()} className={style.opButton} onClick={() => {
 			dispatch({
 				type: 'userCenter/changeModal',
 				payload: {
 					modalVisible: true,
-					modalOp: op
+					modalOp: op,
+					modalCurrentRow: record
 				}
 			});
 		}}>
@@ -61,10 +55,10 @@ function buildOpButton(op = [], dispatch) {
 	);
 }
 
-function buildReactOps(ops = [], dispatch) {
+function buildReactOps(ops = [], dispatch, record) {
 	let reactOps = [];
 	for(let i = 0; i < ops.length; i ++) {
-		reactOps.push(buildOpButton(ops[i], dispatch));
+		reactOps.push(buildOpButton(ops[i], dispatch, record));
 	}
 	return (
 		<span>
@@ -79,8 +73,6 @@ const ContentTable = React.createClass({
 		let activeModule = this.props.activeModule;
 		let data = activeModule.data;
 		let items = activeModule.items;
-		let reactTopOps = buildReactOps(activeModule.topOps, dispatch);
-		let reactOps = buildReactOps(activeModule.ops, dispatch);
 		let columns = [];
 		for(let i = 0; i < items.length; i ++) {
 			let item = items[i];
@@ -91,13 +83,13 @@ const ContentTable = React.createClass({
 		} 
 		columns.push({
 			title: '操作',
-		    render: () => reactOps
+		    render: (text, record) => buildReactOps(activeModule.ops, dispatch, record)
 		});
 		return (
 			<Table 
 		    columns={columns} 
 		    dataSource={data} 
-		    title={() => reactTopOps} 
+		    title={() => buildReactOps(activeModule.topOps, dispatch)} 
 		    bordered />
 		);
 	}
@@ -109,29 +101,39 @@ const OpModal = React.createClass({
 		let dispatch = this.props.dispatch;
 		let activeModule = this.props.activeModule;
 		let modal = state.modal;
-		let op = modal.op;
 		let visible = modal.visible;
 		let title = modal.title;
-		let items = activeModule.items;
-		let inputs = [];
-		for(let i = 0; i < items.length; i ++) {
-			let item = items[i];
-			let key = item.key;
-			if(item.edit) {
-				inputs.push(
-					<Input 
-					className={style.modalInput} 
-					key={uuid()} 
-					placeholder={item.value} 
-					value={modal.inputs[key]} 
-					onChange={(e) => {
-						dispatch({
-							type: 'userCenter/changeModalInput',
-							payload: {key: key, value: e.target.value}
-						});
-					}} />
-				);
-			}
+		let content;
+		switch(state.modal.type) {
+			case MODAL_TYPE_INPUT: 
+				let items = activeModule.items;
+				content = [];
+				for(let i = 0; i < items.length; i ++) {
+					let item = items[i];
+					let key = item.key;
+					if(item.edit) {
+						content.push(
+							<Input 
+							className={style.modalInput} 
+							key={uuid()} 
+							placeholder={item.value} 
+							defaultValue={modal.inputs[key]} 
+							onBlur={(e) => {
+								dispatch({
+									type: 'userCenter/changeModalInput',
+									payload: {key: key, value: e.target.value}
+								});
+							}} />
+						);
+					}
+				}
+				break;
+			case MODAL_TYPE_LIST: 
+				
+				break;
+			case MODAL_TYPE_COMFIRM: 
+				content = <span className={style.modalComfirmText}>请确认{getOpName(modal.op)}么?</span>;
+				break;
 		}
 		return (
 			<Modal 
@@ -150,7 +152,7 @@ const OpModal = React.createClass({
 					type: 'userCenter/modalOk'
 				});
 			}}>
-				{inputs}
+				{content}
 			</Modal>
 		);
 	}

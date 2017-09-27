@@ -41,12 +41,26 @@ function pageGroup(pageNum = 1, pageSize = 10, searchId) {
     });
 }
 
-function addUser() {
-	return request(userCenter('/api/system/pageGroup'), {
+function addUser(username, password, email, mobilePhone) {
+	return request(userCenter('/api/system/addUser'), {
         data: {
-            pageNum: pageNum,
-            pageSize: pageSize,
-            searchId: searchId
+            username: username,
+            password: password,
+            email: email,
+            mobilePhone: mobilePhone
+        }
+    });
+}
+
+function updateUser(username, password, email, mobilePhone, status) {
+	return request(userCenter('/api/system/updateUser'), {
+        data: {
+        	userId: userId,
+            username: username,
+            password: password,
+            email: email,
+            mobilePhone: mobilePhone,
+            status: status
         }
     });
 }
@@ -55,5 +69,7 @@ export default {
     pageGroup,
     pageUser,
     pageRole,
-    pagePermission
+    pagePermission,
+    addUser, 
+    updateUser
 };

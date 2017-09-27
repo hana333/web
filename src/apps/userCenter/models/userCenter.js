@@ -3,7 +3,14 @@ import {Modal} from 'antd';
 import {routerRedux} from 'dva/router';
 import {clone, merge} from '../../../utils/utils';
 import {getLoginSession, removeLoginSession} from '../../../plugins/loginSession';
-import {pageUser, pageRole, pagePermission, pageGroup} from '../services/systemService';
+import {
+	pageUser, 
+	pageRole, 
+	pagePermission, 
+	pageGroup,
+	addUser, 
+	updateUser,
+} from '../services/systemService';
 
 // 前缀_模块
 const MODULE_USER = '用户管理';
@@ -14,7 +21,6 @@ const MODULE_GROUP = '组管理';
 // 前缀_模块_操作
 const OP_USER_ADD = 'OP_USER_ADD';
 const OP_USER_UPDATE = 'OP_USER_UPDATE';
-const OP_USER_DELETE = 'OP_USER_DELETE';
 const OP_USER_OWNER_ROLE = 'OP_USER_OWNER_ROLE';
 const OP_USER_CANCEL_ROLE = 'OP_USER_CANCEL_ROLE';
 const OP_USER_ADD_ROLE = 'OP_USER_ADD_ROLE';
@@ -40,7 +46,7 @@ const OP_GROUP_OWNER = 'OP_GROUP_OWNER';
 const OP_GROUP_CANCEL = 'OP_GROUP_CANCEL';
 
 const MODAL_TYPE_INPUT = 'MODAL_TYPE_INPUT';
-const MODAL_TYPE_TABLE = 'MODAL_TYPE_TABLE';
+const MODAL_TYPE_LIST = 'MODAL_TYPE_LIST';
 const MODAL_TYPE_COMFIRM = 'MODAL_TYPE_COMFIRM';
 
 function getOpName(op) {
@@ -51,9 +57,6 @@ function getOpName(op) {
 			break;
 		case OP_USER_UPDATE:
 			name = '更新';
-			break;
-		case OP_USER_DELETE:
-			name = '删除';
 			break;
 		case OP_USER_OWNER_ROLE:
 			name = '拥有角色';
@@ -115,19 +118,22 @@ function getOpName(op) {
 
 const currentPath = '/';
 
+const defaultModal = {
+	visible: false,
+	title: '',
+	inputs: {},
+	currentRow: undefined,
+	op: undefined,
+	type: undefined
+};
+
 const defaultState = {
 	username: '',
 	userData: [],
 	roleData: [],
 	permissionData: [],
 	groupData: [],
-	modal: {
-		visible: false,
-		title: '',
-		inputs: {},
-		op: undefined,
-		type: undefined
-	},
+	modal: defaultModal,
 	modules: {
 		user: {
 			title: MODULE_USER,
@@ -138,7 +144,7 @@ const defaultState = {
 				{key: 'password', value: '密码', edit: true},
 				{key: 'email', value: '邮箱', edit: true}, 
 				{key: 'mobilePhone', value: '手机', edit: true},
-				{key: 'createTime', value: '创建时间', edit: true}
+				{key: 'createTime', value: '创建时间', edit: false}
 			],
 			data: [],
 			topOps: [
@@ -146,7 +152,6 @@ const defaultState = {
 			],
 			ops: [
 				OP_USER_UPDATE,
-				OP_USER_DELETE,
 				OP_USER_OWNER_ROLE,
 				OP_USER_ADD_ROLE
 			]
@@ -251,21 +256,28 @@ export default {
 			return stateClone;
 		},
 		
-		changeModalComplete(state, {payload: {modalVisible, modalOp, modalType}}) {
-			return merge(state, {
-				modal: {
-					visible: modalVisible,
-					title: getOpName(modalOp),
-					op: modalOp,
-					type: modalType
-				}
-			});
+		changeModalComplete(state, {payload: {modalVisible, modalOp, modalType, modalCurrentRow}}) {
+			if(!modalVisible) {
+				let stateClone = clone(state);
+				stateClone.modal = defaultModal;
+				return stateClone;
+			} else {
+				return merge(state, {
+					modal: {
+						visible: modalVisible,
+						title: getOpName(modalOp),
+						op: modalOp,
+						type: modalType,
+						currentRow: modalCurrentRow
+					}
+				});
+			}
 		},
 		
 		changeModalInput(state, {payload: {key, value}}) {
-			return merge(state, {
-				modalInputs: {key: value}
-			});
+			let modalTemp = {modal: {inputs: {}}};
+			modalTemp.modal.inputs[key] = value;
+			return merge(state, modalTemp);
 		},
 		
 		resetState() {
@@ -367,7 +379,7 @@ export default {
 			}
 		},
 		
-		*changeModal({payload: {modalVisible, modalOp}}, {put}) {
+		*changeModal({payload: {modalVisible, modalOp, modalCurrentRow}}, {put}) {
 			let modalType;
 			switch (modalOp) {
 				case OP_USER_ADD:
@@ -380,7 +392,6 @@ export default {
 				case OP_GROUP_UPDATE:
 					modalType = MODAL_TYPE_INPUT;
 					break;
-				case OP_USER_DELETE:
 				case OP_ROLE_DELETE:
 				case OP_PERMISSION_DELETE:
 				case OP_GROUP_DELETE:
@@ -397,10 +408,10 @@ export default {
 				case OP_GROUP_ADD_USER:
 				case OP_GROUP_ADD_ROLE:
 				case OP_GROUP_ADD_PERMISSION:
-					modalType = MODAL_TYPE_TABLE;
+					modalType = MODAL_TYPE_LIST;
 					break;
 			}
-			yield put({type: 'changeModalComplete', payload: {modalVisible, modalOp, modalType}});
+			yield put({type: 'changeModalComplete', payload: {modalVisible, modalOp, modalType, modalCurrentRow}});
 			yield setTimeout(() => {
 				if(modalVisible) {
 					let firstInputDom = document.querySelector('.modal-container input');
@@ -411,17 +422,27 @@ export default {
 		
 		*modalOk(action, {select, put}) {
 			let userCenterState = yield select(state => state.userCenter);
-			let modalOp = userCenterState.modalOp;
-			let modalInputs = userCenterState.modalInputs;
-			switch (modalOp) {
+			let model = userCenterState.modal;
+			let inputs = model.inputs;
+			let currentRow = model.currentRow;
+			// user
+			let username = inputs.username;
+			let password = inputs.password;
+			let email = inputs.email;
+			let mobilePhone = inputs.mobilePhone;
+			
+			switch (userCenterState.modal.op) {
 				case OP_USER_ADD:
-					console.log(modalInputs);
+					if(!username && !email && !phone) return Toast.show('用户名、邮箱、手机不能全部为空');
+					if(!password) return Toast.show('密码不能为空');
+					yield addUser(username, password, email, mobilePhone);
+					res = yield put({type: 'user'});
 					break;
 				case OP_USER_UPDATE:
-				
-					break;
-				case OP_USER_DELETE:
-				
+					if(!username && !email && !phone && !password) return Toast.show('请填写要更新的内容');
+					console.log(currentRow.userId)
+					yield updateUser(currentRow.userId, username, password, email, mobilePhone);
+					res = yield put({type: 'user'});
 					break;
 				case OP_USER_OWNER_ROLE:
 				
@@ -478,6 +499,8 @@ export default {
 				
 					break;
 			}
+			if(res) Toast.show(res.msg);
+			if(res !== 1) return;
 			yield put({
 				type: 'changeModal',
 				payload: {modalVisible: false}
@@ -506,7 +529,6 @@ export default {
 	
 	OP_USER_ADD,
 	OP_USER_UPDATE,
-	OP_USER_DELETE,
 	OP_USER_OWNER_ROLE,
 	OP_USER_CANCEL_ROLE,
 	OP_USER_ADD_ROLE,
@@ -532,7 +554,7 @@ export default {
 	OP_GROUP_CANCEL,
 	
 	MODAL_TYPE_INPUT,
-	MODAL_TYPE_TABLE,
+	MODAL_TYPE_LIST,
 	MODAL_TYPE_COMFIRM,
 	
 	getOpName
