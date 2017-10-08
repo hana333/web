@@ -8,8 +8,15 @@ import {
 	pageRole, 
 	pagePermission, 
 	pageGroup,
-	addUser, 
+	addUser,
+	addRole,
+	addPermission,
+	deleteRole,
+	deletePermission,
+	deleteGroup,
 	updateUser,
+	updateRole,
+    updatePermission
 } from '../services/systemService';
 
 // 前缀_模块
@@ -122,6 +129,7 @@ const defaultModal = {
 	visible: false,
 	title: '',
 	inputs: {},
+	selecteds: [],
 	currentRow: undefined,
 	op: undefined,
 	type: undefined
@@ -445,44 +453,87 @@ export default {
 		*modalOk(action, {select, put}) {
 			let userCenterState = yield select(state => state.userCenter);
 			let model = userCenterState.modal;
-			let inputs = model.inputs;
-			let currentRow = model.currentRow;
+			let inputs = model && model.inputs;
+			let currentRow = model && model.currentRow;
+			let selecteds = model && model.selecteds;
 			// user
-			let username = inputs.username;
-			let password = inputs.password;
-			let email = inputs.email;
-			let mobilePhone = inputs.mobilePhone;
+			let username = inputs && inputs.username;
+			let password = inputs && inputs.password;
+			let email = inputs && inputs.email;
+			let mobilePhone = inputs && inputs.mobilePhone;
+			// role permission 
+			let role = inputs && inputs.role;
+			let permission = inputs && inputs.permission;
+			let description = inputs && inputs.description;
+			// currentRow
+			let currentUserId = currentRow && currentRow.userId;
+			let currentRoleId = currentRow && currentRow.roleId;
+			let currentPermissionId = currentRow && currentRow.permissionId;
+			let currentGroupId = currentRow && currentRow.groupId;
+			// 结果
 			let res;
-			switch (userCenterState.modal.op) {
+			let reload;
+			switch (model.op) {
 				case OP_USER_ADD:
 					if(!username && !email && !phone) return Toast.show('用户名、邮箱、手机不能全部为空');
 					if(!password) return Toast.show('密码不能为空');
 					res = yield addUser(username, password, email, mobilePhone);
-					yield put({type: 'user'});
+					reload = 'user';
+					break;
+				case OP_ROLE_ADD:
+					if(!role) return Toast.show('角色名称不能为空');
+					res = yield addRole(role, description);
+					reload = 'role';
+					break;
+				case OP_PERMISSION_ADD:
+					if(!permission) return Toast.show('权限名称不能为空');
+					res = yield addPermission(permission, description);
+					reload = 'permission';
+					break;
+				case OP_GROUP_ADD:
+					// 暂未开放
+					// ...
+					break;
+				case OP_ROLE_DELETE:
+					res = yield deleteRole(currentRoleId);
+					reload = 'role';
+					break;
+				case OP_PERMISSION_DELETE:
+					res = yield deletePermission(currentPermissionId);
+					reload = 'permission';
+					break;
+				case OP_GROUP_DELETE:
+					res = yield deleteGroup(currentGroupId);
+					reload = 'group';
 					break;
 				case OP_USER_UPDATE:
 					if(!username && !email && !phone && !password) return Toast.show('请填写要更新的内容');
 					res = yield updateUser(currentRow.userId, username, password, email, mobilePhone);
-					yield put({type: 'user'});
+					reload = 'user';
+					break;
+				case OP_ROLE_UPDATE:
+					if(!role) return Toast.show('请填写要更新的角色名称');
+					res = yield updateRole(currentRoleId, role, description);
+					reload = 'role';
+					break;
+				case OP_PERMISSION_UPDATE:
+					if(!permission) return Toast.show('请填写要更新的权限名称');
+					res = yield updatePermission(currentPermissionId, permission, description);
+					reload = 'permission';
 					break;
 				case OP_USER_OWNER_ROLE:
-				
+					
+					
 					break;
 				case OP_USER_CANCEL_ROLE:
 				
 					break;
 				case OP_USER_ADD_ROLE:
-				
+					
+					
 					break;
-				case OP_ROLE_ADD:
 				
-					break;
-				case OP_ROLE_UPDATE:
 				
-					break;
-				case OP_ROLE_DELETE:
-				
-					break;
 				case OP_ROLE_OWNER_PERMISSION:
 				
 					break;
@@ -492,18 +543,9 @@ export default {
 				case OP_ROLE_ADD_PERMISSION:
 				
 					break;
-				case OP_PERMISSION_ADD:
 				
-					break;
-				case OP_PERMISSION_UPDATE:
 				
-					break;
-				case OP_PERMISSION_DELETE:
 				
-					break;
-				case OP_GROUP_ADD:
-				
-					break;
 				case OP_GROUP_ADD_USER:
 				
 					break;
@@ -521,6 +563,7 @@ export default {
 					break;
 			}
 			if(res) {
+				yield put({type: reload});
 				yield put({
 					type: 'changeModal',
 					payload: {modalVisible: false}

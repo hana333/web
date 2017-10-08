@@ -70,6 +70,30 @@ function addPermission(permission, description) {
     });
 }
 
+function deleteRole(roleId) {
+	return request(userCenter('/api/system/deleteRole'), {
+        data: {
+        	roleId: roleId
+        }
+    });
+}
+
+function deletePermission(permissionId) {
+	return request(userCenter('/api/system/deletePermission'), {
+        data: {
+        	permissionId: permissionId
+        }
+    });
+}
+
+function deleteGroup(groupId) {
+	return request(userCenter('/api/system/deleteGroup'), {
+        data: {
+        	groupId: groupId
+        }
+    });
+}
+
 function updateUser(userId, username, password, email, mobilePhone, status) {
 	return request(userCenter('/api/system/updateUser'), {
         data: {
@@ -83,6 +107,26 @@ function updateUser(userId, username, password, email, mobilePhone, status) {
     });
 }
 
+function updateRole(roleId, role, description) {
+	return request(userCenter('/api/system/updateRole'), {
+        data: {
+        	roleId: roleId,
+            role: role,
+            description: description
+        }
+    });
+}
+
+function updatePermission(permissionId, permission, description) {
+	return request(userCenter('/api/system/updatePermission'), {
+        data: {
+        	permissionId: permissionId,
+            permission: permission,
+            description: description
+        }
+    });
+}
+
 export default {
     pageGroup,
     pageUser,
@@ -91,5 +135,10 @@ export default {
     addUser,
     addRole,
     addPermission,
-    updateUser
+    deleteRole,
+	deletePermission,
+	deleteGroup,
+    updateUser,
+    updateRole,
+    updatePermission
 };

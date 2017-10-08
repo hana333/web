@@ -1,4 +1,5 @@
 import React from 'react';
+import SelectList from '../../../components/SelectList';
 import {Layout, Menu, Breadcrumb, Button, Spin, Table, Modal, Input} from 'antd';
 import {connect} from 'dva';
 import {uuid} from '../../../utils/code';
@@ -50,7 +51,7 @@ function buildOpButton(op = [], dispatch, record) {
 				}
 			});
 		}}>
-		{getOpName(op)}
+			{getOpName(op)}
 		</Button>
 	);
 }
@@ -217,6 +218,7 @@ function UserCenterPage({state, dispatch}) {
 							<Content className={style.content}>
 								<h2 className={style.contentTitle}>{tab}</h2>
 								{contentTable}
+								<SelectList />
 							</Content>
 						</Layout>
 					</Content>
