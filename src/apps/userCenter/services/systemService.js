@@ -52,7 +52,25 @@ function addUser(username, password, email, mobilePhone) {
     });
 }
 
-function updateUser(username, password, email, mobilePhone, status) {
+function addRole(role, description) {
+	return request(userCenter('/api/system/addRole'), {
+        data: {
+        	role: role,
+            description: description
+        }
+    });
+}
+
+function addPermission(permission, description) {
+	return request(userCenter('/api/system/addPermission'), {
+        data: {
+        	permission: permission,
+            description: description
+        }
+    });
+}
+
+function updateUser(userId, username, password, email, mobilePhone, status) {
 	return request(userCenter('/api/system/updateUser'), {
         data: {
         	userId: userId,
@@ -70,6 +88,8 @@ export default {
     pageUser,
     pageRole,
     pagePermission,
-    addUser, 
+    addUser,
+    addRole,
+    addPermission,
     updateUser
 };

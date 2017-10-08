@@ -120,8 +120,8 @@ const OpModal = React.createClass({
 							defaultValue={modal.inputs[key]} 
 							onBlur={(e) => {
 								dispatch({
-									type: 'userCenter/changeModalInput',
-									payload: {key: key, value: e.target.value}
+									type: 'userCenter/changeModalInputs',
+									payload: {[key]: e.target.value}
 								});
 							}} />
 						);
@@ -204,7 +204,7 @@ function UserCenterPage({state, dispatch}) {
 							<Sider className={style.sider}>
 								<Menu
 								mode="inline"
-								defaultSelectedKeys={[tab]} 
+								selectedKeys={[tab]} 
 								onClick={({key}) => {
 									dispatch({
 										type: 'userCenter/changeTab',

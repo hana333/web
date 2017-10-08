@@ -274,9 +274,8 @@ export default {
 			}
 		},
 		
-		changeModalInput(state, {payload: {key, value}}) {
-			let modalTemp = {modal: {inputs: {}}};
-			modalTemp.modal.inputs[key] = value;
+		changeModalInputs(state, {payload: inputs}) {
+			let modalTemp = {modal: {inputs}};
 			return merge(state, modalTemp);
 		},
 		
@@ -309,8 +308,9 @@ export default {
 		},
 		
 		*changeTab({payload}, {select, put}) {
-			yield put({type: 'changeTabComplete', payload: payload});
 			let userCenterState = yield select(state => state.userCenter);
+			if(payload === userCenterState.modules.group.title) return yield Toast.show('该功能尚未开放');
+			yield put({type: 'changeTabComplete', payload: payload});
 			switch (payload){
 				case userCenterState.modules.user.title:
 					yield put({type: 'user'});
@@ -325,6 +325,7 @@ export default {
 					yield put({type: 'group'});
 					break;
 			}
+			
 		},
 		
 		*user(action, {put}) {
@@ -379,18 +380,39 @@ export default {
 			}
 		},
 		
-		*changeModal({payload: {modalVisible, modalOp, modalCurrentRow}}, {put}) {
+		*changeModal({payload: {modalVisible, modalOp, modalCurrentRow}}, {select, put}) {
 			let modalType;
 			switch (modalOp) {
 				case OP_USER_ADD:
 				case OP_ROLE_ADD:
 				case OP_PERMISSION_ADD:
 				case OP_GROUP_ADD:
+					modalType = MODAL_TYPE_INPUT;
+					break;
 				case OP_USER_UPDATE:
 				case OP_ROLE_UPDATE:
 				case OP_PERMISSION_UPDATE:
 				case OP_GROUP_UPDATE:
 					modalType = MODAL_TYPE_INPUT;
+					let modules = yield select(state => state.userCenter.modules);
+					let inputsBuf = {};
+					let inputs = {};
+					for(let key in modalCurrentRow) {
+						let value = modalCurrentRow[key];
+						inputsBuf[key] = value;
+					}
+					for(let key in modules) {
+						let module = modules[key];
+						if(module.active) {
+							let items = module.items;
+							for(let i = 0; i < items.length; i ++) {
+								let key = items[i].key;
+								if(inputsBuf[key]) inputs[key] = inputsBuf[key];
+							}
+							break;
+						}
+					}
+					yield put({type: 'changeModalInputs', payload: inputs});
 					break;
 				case OP_ROLE_DELETE:
 				case OP_PERMISSION_DELETE:
@@ -430,19 +452,18 @@ export default {
 			let password = inputs.password;
 			let email = inputs.email;
 			let mobilePhone = inputs.mobilePhone;
-			
+			let res;
 			switch (userCenterState.modal.op) {
 				case OP_USER_ADD:
 					if(!username && !email && !phone) return Toast.show('用户名、邮箱、手机不能全部为空');
 					if(!password) return Toast.show('密码不能为空');
-					yield addUser(username, password, email, mobilePhone);
-					res = yield put({type: 'user'});
+					res = yield addUser(username, password, email, mobilePhone);
+					yield put({type: 'user'});
 					break;
 				case OP_USER_UPDATE:
 					if(!username && !email && !phone && !password) return Toast.show('请填写要更新的内容');
-					console.log(currentRow.userId)
-					yield updateUser(currentRow.userId, username, password, email, mobilePhone);
-					res = yield put({type: 'user'});
+					res = yield updateUser(currentRow.userId, username, password, email, mobilePhone);
+					yield put({type: 'user'});
 					break;
 				case OP_USER_OWNER_ROLE:
 				
@@ -499,12 +520,13 @@ export default {
 				
 					break;
 			}
-			if(res) Toast.show(res.msg);
-			if(res !== 1) return;
-			yield put({
-				type: 'changeModal',
-				payload: {modalVisible: false}
-			});
+			if(res) {
+				yield put({
+					type: 'changeModal',
+					payload: {modalVisible: false}
+				});
+				yield Toast.show(res.msg);
+			}
 		}
 		
 	},
