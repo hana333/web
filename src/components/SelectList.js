@@ -17,4 +17,3 @@ class SelectList extends React.Component {
 }
 
 export default SelectList;
-

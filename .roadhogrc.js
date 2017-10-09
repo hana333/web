@@ -7,7 +7,8 @@ const svgSpriteDirs = [
 
 export default {
 	svgSpriteLoaderDirs: svgSpriteDirs,
-	entry: 'src/apps/userCenter/index.js',
+	//entry: 'src/apps/userCenter/index.js',
+	entry: 'src/apps/me2-mobile/index.js',
 	outputPath: './dist',
 	publicPath: './',
 	//disableCSSModules: true, // 屏蔽CSSModules,避免css后缀混淆

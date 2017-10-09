@@ -16,12 +16,13 @@ function removeLoginSession() {
 function getLoginSession() {
 	let currentState = getState();
 	let loginSession = currentState.loginSession.loginSession;
-	if(!loginSession || !loginSession.loginTime) return;
+	if(!loginSession || !loginSession.loginTime) {
+		return undefined;
+	}
 	let currentTime = (new Date()).getTime();
 	let loginTime = toDate(loginSession.loginTime).getTime();
 	let loginCycle = loginSession.loginCycle;
 	if(loginCycle < 0 || currentTime - loginTime < loginCycle) {
-		
 		return loginSession;
 	} else {
 		removeLoginSession();

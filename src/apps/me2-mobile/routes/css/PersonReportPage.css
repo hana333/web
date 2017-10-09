@@ -1,0 +1,49 @@
+.headScan,
+.headGood,
+.headWarning,
+.headBad {
+	height: 45%;
+	margin: 0px;
+	padding: 0px;
+}
+
+.headScan {
+	background: -webkit-linear-gradient(left, #4A59F2, #2A89F3);
+	background: -o-linear-gradient(right, #4A59F2, #2A89F3);
+	background: -moz-linear-gradient(right, #4A59F2, #2A89F3);
+	background: linear-gradient(to right, #4A59F2, #2A89F3);
+}
+
+.headGood {
+	background: -webkit-linear-gradient(left, #D88228, #DAA217);
+	background: -o-linear-gradient(right, #D88228, #DAA217);
+	background: -moz-linear-gradient(right, #D88228, #DAA217);
+	background: linear-gradient(to right, #D88228, #DAA217);
+}
+
+.headWarning {
+	background: -webkit-linear-gradient(left, #D88228, #DAA217);
+	background: -o-linear-gradient(right, #D88228, #DAA217);
+	background: -moz-linear-gradient(right, #D88228, #DAA217);
+	background: linear-gradient(to right, #D88228, #DAA217);
+}
+
+.headBad {
+	background: -webkit-linear-gradient(left, #D88228, #DAA217);
+	background: -o-linear-gradient(right, #D88228, #DAA217);
+	background: -moz-linear-gradient(right, #D88228, #DAA217);
+	background: linear-gradient(to right, #D88228, #DAA217);
+}
+
+.list {
+	height: 55%;
+	margin: 0px;
+	padding: 0px;
+}
+
+:global(.person-report-container) {
+	height: 100%;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
