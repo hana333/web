@@ -4,7 +4,7 @@ import PersonReportPage from './routes/PersonReportPage';
 function RouterConfig({history}) {
 	return(
 		<Router history={history}>
-			<Route path="/" component={PersonReportPage} />
+			<Route path="/personReport" component={PersonReportPage} />
 		</Router>
 	);
 }

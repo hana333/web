@@ -4,4 +4,5 @@ html, body, :global(#root) {
 	background-color: #F5F5F9;
 	padding: 0px;
 	margin: 0px;
+	overflow-x: hidden;
 }

@@ -1,23 +1,23 @@
 .headTitle {
 	display: block;
 	text-align: center;
-	font-size: 60px;
-	font-weight: 600;
+	font-size: 55px;
+	font-weight: 500;
 	color: #FFFFFF;
 	position: relative;
-	top: calc(50% - 45px);
+	top: calc(50% - 40px);
 }
 
 .scanBoxToLeft,
 .scanBoxToRight {
 	position: absolute;
-	left: 30px;
 	top: 0px;
-	width: 25%;
+	width: 30%;
 	height: 100%;
 }
 
 .scanBoxToLeft {
+	right: -30%;
 	background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
 	background: -o-linear-gradient(right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
 	background: -moz-linear-gradient(right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
@@ -26,6 +26,7 @@
 }
 
 .scanBoxToRight {
+	left: -30%;
 	background: -webkit-linear-gradient(right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
 	background: -o-linear-gradient(left, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
 	background: -moz-linear-gradient(left, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
@@ -37,7 +38,7 @@
 .headGood,
 .headWarning,
 .headBad {
-	height: 45%;
+	height: 39.5%;
 	margin: 0px;
 	padding: 0px;
 	position: relative;
@@ -51,10 +52,10 @@
 }
 
 .headGood {
-	background: -webkit-linear-gradient(left, #D88228, #DAA217);
-	background: -o-linear-gradient(right, #D88228, #DAA217);
-	background: -moz-linear-gradient(right, #D88228, #DAA217);
-	background: linear-gradient(to right, #D88228, #DAA217);
+	background: -webkit-linear-gradient(left, #4BAD4B, #5CB85C);
+	background: -o-linear-gradient(right, #4BAD4B, #5CB85C);
+	background: -moz-linear-gradient(right, #4BAD4B, #5CB85C);
+	background: linear-gradient(to right, #4BAD4B, #5CB85C);
 }
 
 .headWarning {
@@ -65,15 +66,21 @@
 }
 
 .headBad {
-	background: -webkit-linear-gradient(left, #D88228, #DAA217);
-	background: -o-linear-gradient(right, #D88228, #DAA217);
-	background: -moz-linear-gradient(right, #D88228, #DAA217);
-	background: linear-gradient(to right, #D88228, #DAA217);
+	background: -webkit-linear-gradient(left, #C60000, #FF0B0B);
+	background: -o-linear-gradient(right, #C60000, #FF0B0B);
+	background: -moz-linear-gradient(right, #C60000, #FF0B0B);
+	background: linear-gradient(to right, #C60000, #FF0B0B);
 }
 
 .list {
 	margin: 0px;
 	padding: 0px;
+}
+
+.exValue {
+	float: right;
+	color: red;
+	margin-right: 30px;
 }
 
 :global(.person-report-container) {
