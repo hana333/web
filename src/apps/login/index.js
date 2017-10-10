@@ -10,6 +10,6 @@ app.model(require('./models/login'));
 app.model(require('./models/register'));
 app.model(require('./models/forgetPassword'));
 
-app.router(require('./router'));
+app.router(require('./router')); 
 
 app.start('#root');
