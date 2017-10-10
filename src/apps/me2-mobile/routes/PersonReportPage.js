@@ -4,29 +4,46 @@ import {Icon, List} from 'antd-mobile';
 
 import style from './css/PersonReportPage.css';
 
+class HeadScan extends React.Component {
+	
+	render() {
+		return (
+			<div className={style.headScan}>
+				<div className={style.headTitle}>
+					作业报告扫描中．．．
+				</div>
+				<div className={style.scanBoxToLeft}></div>
+			</div>
+		);
+	}
+	
+}
+
 function PersonReportPage({state, dispatch}) {
 	return(
 		<div className='person-report-container'>
-			<div className={style.headScan}>
-				
-			</div>
+			<HeadScan />
 			<div className={style.list}>
 				<List>
-					<List.Item arrow='horizontal'>
-						我的速度
+					<List.Item>
+						平均完成时间异常
 					</List.Item>
-					<List.Item arrow='horizontal'>
-						我的水平
+					<List.Item>
+						平均正确率异常
 					</List.Item>
-					<List.Item arrow='horizontal'>
-						我的正确
+					<List.Item>
+						完成时间分布异常
 					</List.Item>
-					<List.Item arrow='horizontal'>
-						综合报告
+					<List.Item>
+						正确率分布异常
+					</List.Item>
+					<List.Item>
+						逾期未交人数异常
+					</List.Item>
+					<List.Item>
+						题目平均正确率异常
 					</List.Item>
 				</List>
-			</div>
-			<div>
 			</div>
 		</div>
 	);

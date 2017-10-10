@@ -1,3 +1,38 @@
+.headTitle {
+	display: block;
+	text-align: center;
+	font-size: 60px;
+	font-weight: 600;
+	color: #FFFFFF;
+	position: relative;
+	top: calc(50% - 45px);
+}
+
+.scanBoxToLeft,
+.scanBoxToRight {
+	position: absolute;
+	left: 30px;
+	top: 0px;
+	width: 25%;
+	height: 100%;
+}
+
+.scanBoxToLeft {
+	background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	background: -o-linear-gradient(right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	background: -moz-linear-gradient(right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	background: linear-gradient(to right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	border-left: 2px solid #FFFFFF;
+}
+
+.scanBoxToRight {
+	background: -webkit-linear-gradient(right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	background: -o-linear-gradient(left, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	background: -moz-linear-gradient(left, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	background: linear-gradient(to left, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+	border-right: 2px solid #FFFFFF;
+}
+
 .headScan,
 .headGood,
 .headWarning,
@@ -5,6 +40,7 @@
 	height: 45%;
 	margin: 0px;
 	padding: 0px;
+	position: relative;
 }
 
 .headScan {
@@ -36,7 +72,6 @@
 }
 
 .list {
-	height: 55%;
 	margin: 0px;
 	padding: 0px;
 }
@@ -46,4 +81,9 @@
 	width: 100%;
 	margin: 0px;
 	padding: 0px;
+}
+
+:global(.am-list-item .am-list-line .am-list-content) {
+	line-height: 120px;
+	font-size: 35px;
 }

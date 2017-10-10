@@ -18,12 +18,12 @@ export default {
 		['import', [{ 'libraryName': 'antd', 'style': true }, { 'libraryName': 'antd-mobile', 'style': true }]]
 	],
 	// px转rem,mobile使用
-	//extraPostCSSPlugins: [
-	//	pxtorem({
-	//		rootValue: 100,
-	//		propWhiteList: [],
-	//	}),
-	//],
+	extraPostCSSPlugins: [
+		pxtorem({
+			rootValue: 100,
+			propWhiteList: [],
+		}),
+	],
 	env: {
 		development: {
 			extraBabelPlugins: [
