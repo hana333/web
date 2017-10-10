@@ -1,4 +1,4 @@
-const currentPath = '/personReport';
+const currentPath = '/';
 
 const defaultState = {
 	avgCompTime: undefined,// 平均完成时间异常
@@ -19,6 +19,7 @@ export default {
 	reducers: {
 		
 		changeAvgCompTime(state, {payload}) {
+			console.log(payload)
 			return {...state, ...{avgCompTime: payload}}
 		},
 		
@@ -51,22 +52,23 @@ export default {
 	effects: {
 		
 		*init(action, {put}) {
+			console.log(123)
 			yield new Promise((resolve) => {
 				setTimeout(resolve, 1000);
 			});
-			yield put({type: 'changeAvgCompTime', payload: 10});
+			yield put({type: 'changeAvgCompTime', payload: 2});
 			yield new Promise((resolve) => {
 				setTimeout(resolve, 1500);
 			});
-			yield put({type: 'changeAvgCorr', payload: 10});
+			yield put({type: 'changeAvgCorr', payload: 5});
 			yield new Promise((resolve) => {
 				setTimeout(resolve, 500);
 			});
-			yield put({type: 'changeTimeDis', payload: 10});
+			yield put({type: 'changeTimeDis', payload: 21});
 			yield new Promise((resolve) => {
 				setTimeout(resolve, 1000);
 			});
-			yield put({type: 'changeCorrDis', payload: 10});
+			yield put({type: 'changeCorrDis', payload: 13});
 			yield new Promise((resolve) => {
 				setTimeout(resolve, 1200);
 			});
@@ -74,7 +76,7 @@ export default {
 			yield new Promise((resolve) => {
 				setTimeout(resolve, 800);
 			});
-			yield put({type: 'changeAvgQuestionCorr', payload: 10});
+			yield put({type: 'changeAvgQuestionCorr', payload: 6});
 			yield put({type: 'changeState', payload: 2});
 		}
 		
